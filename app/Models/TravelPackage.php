@@ -12,8 +12,21 @@ class TravelPackage extends Model
     protected $table = 'travel_packages';
 
     protected $fillable = [
-        'name', 'country', 'price', 'description', 'image', 
-        'itinerary', 'include', 'exclude', 'available_dates', 'itinerary_pdfs', 'include_pdfs', 'exclude_pdfs'
+        'name',
+        'country',
+        'price',
+        'duration',
+        'description',
+        'itinerary',
+        'include',
+        'exclude',
+        'itinerary_pdfs',
+        'include_pdfs',
+        'exclude_pdfs',
+        'image',
+        'available_dates',
+        'activities',
+        'is_visible'
     ];
 
     protected $casts = [

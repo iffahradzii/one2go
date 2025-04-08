@@ -5,6 +5,17 @@
 @section('content')
 <div class="container">
     <h1>Create Travel Package</h1>
+    
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    
     <form action="{{ route('admin.travel-package.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <!-- Basic Information -->
@@ -13,16 +24,16 @@
             <div class="card-body">
                 <div class="form-group mb-3">
                     <label for="name">Package Name</label>
-                    <input type="text" name="name" class="form-control" required>
+                    <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
                 </div>
 
                 <div class="form-group mb-3">
                     <label for="country">Country</label>
                     <select name="country" class="form-control" required>
-                        <option value="Indonesia">Indonesia</option>
-                        <option value="Thailand">Thailand</option>
-                        <option value="Vietnam">Vietnam</option>
-                        <option value="South Korea">South Korea</option>
+                        <option value="Indonesia" {{ old('country') == 'Indonesia' ? 'selected' : '' }}>Indonesia</option>
+                        <option value="Thailand" {{ old('country') == 'Thailand' ? 'selected' : '' }}>Thailand</option>
+                        <option value="Vietnam" {{ old('country') == 'Vietnam' ? 'selected' : '' }}>Vietnam</option>
+                        <option value="South Korea" {{ old('country') == 'South Korea' ? 'selected' : '' }}>South Korea</option>
                     </select>
                 </div>
 
@@ -30,17 +41,21 @@
                     <div class="col-md-4">
                         <div class="form-group mb-3">
                             <label for="price">Base Price</label>
-                            <input type="number" name="price" step="0.01" class="form-control" required>
+                            <input type="number" name="price" step="0.01" class="form-control" value="{{ old('price') }}" required>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group mb-3">
                             <label for="duration">Duration</label>
-                            <input type="number" name="duration" id="duration" class="form-control" min="1" placeholder="Number of days" required>
+                            <input type="number" name="duration" id="duration" class="form-control" min="1" value="{{ old('duration') }}" placeholder="Number of days" required>
                         </div>
                     </div>
                 </div>
                 
+                <div class="form-group mb-3">
+                    <label for="description">Description</label>
+                    <textarea name="description" class="form-control" rows="4" required>{{ old('description') }}</textarea>
+                </div>
             </div>
         </div>
 
@@ -61,7 +76,7 @@
                 <div class="form-group mb-3">
                     <label for="include">Include</label>
                     <div id="include-container">
-                        <textarea name="include[]" class="form-control mb-2" rows="2" placeholder="Include item"></textarea>
+                        <textarea name="include[]" class="form-control mb-2" rows="2" placeholder="Include item">{{ old('include.0') }}</textarea>
                     </div>
                     <button type="button" id="add-include" class="btn btn-secondary btn-sm">Add Include</button>
                 </div>
@@ -69,7 +84,7 @@
                 <div class="form-group mb-3">
                     <label for="exclude">Exclude</label>
                     <div id="exclude-container">
-                        <textarea name="exclude[]" class="form-control mb-2" rows="2" placeholder="Exclude item"></textarea>
+                        <textarea name="exclude[]" class="form-control mb-2" rows="2" placeholder="Exclude item">{{ old('exclude.0') }}</textarea>
                     </div>
                     <button type="button" id="add-exclude" class="btn btn-secondary btn-sm">Add Exclude</button>
                 </div>
@@ -84,12 +99,12 @@
                     <div class="activity-item mb-3">
                         <div class="row">
                             <div class="col-md-6">
-                                <input type="text" name="activities[]" class="form-control" placeholder="Activity Name">
+                                <input type="text" name="activities[]" class="form-control" placeholder="Activity Name" value="{{ old('activities.0') }}">
                             </div>
                             <div class="col-md-6">
                                 <div class="input-group">
                                     <span class="input-group-text">RM</span>
-                                    <input type="number" name="activity_prices[]" class="form-control" step="0.01" placeholder="Price per person">
+                                    <input type="number" name="activity_prices[]" class="form-control" step="0.01" placeholder="Price per person" value="{{ old('activity_prices.0') }}">
                                 </div>
                             </div>
                         </div>
@@ -106,7 +121,7 @@
                 <div class="form-group mb-3">
                     <label for="available_dates">Available Dates</label>
                     <div id="available-dates-container">
-                        <input type="date" name="available_dates[]" class="form-control mb-2">
+                        <input type="date" name="available_dates[]" class="form-control mb-2" value="{{ old('available_dates.0') }}">
                     </div>
                     <button type="button" id="add-available-date" class="btn btn-secondary btn-sm">Add Date</button>
                 </div>
@@ -139,12 +154,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 container.innerHTML += `
                     <div class="mb-3">
                         <label class="fw-bold">Day ${i}</label>
-                        <textarea name="itinerary[day${i}]" class="form-control" rows="3" required
+                        <textarea name="itinerary[]" class="form-control" rows="3" required
                             placeholder="Enter activities for Day ${i}"></textarea>
                     </div>
                 `;
             }
         });
+        
+        // Trigger the change event if there's a value (for form validation failures)
+        if (durationInput.value) {
+            durationInput.dispatchEvent(new Event('change'));
+        }
     }
 
     // Add Include Item

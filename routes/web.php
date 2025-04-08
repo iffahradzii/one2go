@@ -98,7 +98,9 @@ Route::prefix('admin')
         });
     });
 
-    Route::patch('/admin/travel-package/{id}/toggle-visibility', [TravelPackageController::class, 'toggleVisibility'])->name('admin.travel-package.toggleVisibility');
+    // Add this route
+    Route::patch('/admin/travel-package/toggle-visibility/{id}', [App\Http\Controllers\Admin\TravelPackageController::class, 'toggleVisibility'])
+        ->name('admin.travel-package.toggle-visibility');
     Route::delete('/admin/travel-package/{travel_package}', [TravelPackageController::class, 'destroy'])->name('admin.travel-package.destroy');
 
 // Route for editing customer
@@ -155,3 +157,8 @@ Route::post('booking/{package}', [BookingController::class, 'store'])->name('boo
 // New private booking routes
 Route::get('private-booking/{package}', [PrivateBookingController::class, 'create'])->name('private-booking.create');
 Route::post('private-booking/{package}', [PrivateBookingController::class, 'store'])->name('private-booking.store');
+
+// Delete specific items from travel packages
+Route::delete('admin/travel-package/{id}/include/{index}', [TravelPackageController::class, 'deleteIncludeItem'])->name('admin.travel-package.delete-include');
+Route::delete('admin/travel-package/{id}/exclude/{index}', [TravelPackageController::class, 'deleteExcludeItem'])->name('admin.travel-package.delete-exclude');
+Route::delete('admin/travel-package/{id}/date/{index}', [TravelPackageController::class, 'deleteAvailableDate'])->name('admin.travel-package.delete-date');

@@ -68,17 +68,15 @@
                             </div>
                         </div>
 
-                        <!-- Participants -->
+                        <!-- Participants Summary -->
                         <div class="col-md-6 mb-4">
-                            <h6 class="fw-bold mb-3">Participants</h6>
+                            <h6 class="fw-bold mb-3">Participants Summary</h6>
                             <div class="table-responsive">
                             @php
-                                            $adultCount = $booking->travelers->where('category', 'Adult')->count();
-                                            $childCount = $booking->travelers->where('category', 'Child')->count();
-                                            $infantCount = $booking->travelers->where('category', 'Infant')->count();
-                                        @endphp
-                                
-
+                                $adultCount = $booking->travelers->where('category', 'Adult')->count();
+                                $childCount = $booking->travelers->where('category', 'Child')->count();
+                                $infantCount = $booking->travelers->where('category', 'Infant')->count();
+                            @endphp
                                 <table class="table table-borderless">
                                     <tr>
                                         <th>Adults</th>
@@ -93,8 +91,6 @@
                                         <td>{{ $infantCount }}</td>
                                     </tr>
                                 </table>
-                               
-        
                             </div>
                         </div>
 
@@ -111,6 +107,45 @@
                                         <th>Booking Date</th>
                                         <td>{{ $booking->created_at->format('d M Y H:i') }}</td>
                                     </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Travelers List -->
+                        <div class="col-12 mb-4">
+                            <h6 class="fw-bold mb-3">Travelers List</h6>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Name</th>
+                                            <th>Category</th>
+                                            <th>IC/Passport</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse($booking->travelers as $index => $traveler)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $traveler->name }}</td>
+                                                <td>
+                                                    <span class="badge 
+                                                        @if($traveler->category == 'Adult') bg-primary
+                                                        @elseif($traveler->category == 'Child') bg-info
+                                                        @else bg-secondary @endif">
+                                                        {{ $traveler->category }}
+                                                    </span>
+                                                </td>
+                                                <!-- In the travelers list table -->
+                                                <td>{{ $traveler->ic_number ?? 'Not provided' }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center py-3">No traveler information available</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
                                 </table>
                             </div>
                         </div>

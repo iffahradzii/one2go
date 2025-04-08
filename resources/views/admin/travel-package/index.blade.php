@@ -131,25 +131,21 @@
                                 <td>{{ $package->name }}</td>
                                 <td>{{ $package->country }}</td>
                                 <td>RM {{ number_format($package->price, 2) }}</td>
-                                <!-- Update the Status column in the table -->
                                 <td>
-                                    <select class="form-select form-select-sm" 
-                                            onchange="updateStatus(this, {{ $package->id }})"
-                                            style="width: auto;">
-                                        <option value="Visible" {{ $package->is_visible ? 'selected' : '' }}>Visible</option>
-                                        <option value="Invisible" {{ !$package->is_visible ? 'selected' : '' }}>Invisible</option>
-                                    </select>
+                                    <form action="{{ route('admin.travel-package.toggle-visibility', $package->id) }}" method="POST">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-sm {{ $package->is_visible ? 'btn-success' : 'btn-secondary' }}">
+                                            {{ $package->is_visible ? 'Visible' : 'Hidden' }}
+                                        </button>
+                                    </form>
                                 </td>
-                                
-                                <!-- Update the Actions column, removing the delete form -->
                                 <td>
                                     <a href="{{ route('admin.travel-package.edit', ['travel_package' => $package->id]) }}" 
                                        class="btn btn-sm btn-info">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
                                 </td>
-                                <!-- Remove the delete form that was here -->
-                                </tr>
                             </tr>
                         @empty
                             <tr>
@@ -182,33 +178,4 @@
 @section('scripts')
 <!-- Add Font Awesome CDN -->
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
-
-<script>
-function updateStatus(selectElement, packageId) {
-    const status = selectElement.value === 'Visible' ? 1 : 0;
-    
-    fetch(`{{ url('admin/travel-package/toggle-visibility') }}/${packageId}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ is_visible: status })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Optional: Show success message
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-success alert-dismissible fade show';
-            alert.innerHTML = `
-                Status updated successfully
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-            document.querySelector('.card-body').insertBefore(alert, document.querySelector('.table-responsive'));
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
-</script>
 @endsection
