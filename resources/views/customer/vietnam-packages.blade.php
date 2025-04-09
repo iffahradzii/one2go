@@ -42,8 +42,18 @@ Vietnam
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title text-center">{{ $package->name }}</h5>
                         <p class="card-text text-center text-muted">Price: RM{{ number_format($package->price, 2) }}</p>
-                        <a href="{{ route('package.details', ['country' => strtolower($package->country), 'id' => $package->id]) }}" class="btn btn-primary mt-auto">View Details</a>
+                        <div class="mt-auto">
+                            <a href="{{ route('package.details', ['country' => strtolower($package->country), 'id' => $package->id]) }}" class="btn btn-outline-primary w-100 mb-2">View Details</a>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('booking.create', $package->id) }}" class="btn btn-primary flex-grow-1">
+                                    <i class="fas fa-users me-1"></i> Group Booking
+                                </a>
+                                <a href="{{ route('private-booking.create', $package->id) }}" class="btn btn-success flex-grow-1">
+                                    <i class="fas fa-user-shield me-1"></i> Private Tour
+                                </a>
+                            </div>
                         </div>
+                    </div>
                 </div>
             </div>
         @endforeach
