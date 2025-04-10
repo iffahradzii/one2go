@@ -1,120 +1,180 @@
 @extends('layout.layoutAdmin')
-@section("title")
-Admin Dashboard
-@endsection
+
+@section('title', 'Travel Package Management')
 
 @section('content')
-<div class="container mt-5">
-    <!-- Flash Message -->
-    @if (session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    <h1 class="text-center mb-4">Travel Packages</h1>
-
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <!-- Filter Button (Icon) -->
-        <button class="btn btn-light btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fas fa-filter"></i> Filter
-        </button>
-        <div class="dropdown-menu p-3">
-            <form method="GET" action="{{ route('admin.travel-package.index') }}">
-                <div class="form-group mb-2">
-                    <label for="country" class="form-label">Select Country</label>
-                    <select name="country" class="form-select">
-                        <option value="">Select Country</option>
-                        @foreach($countries as $country)
-                            <option value="{{ $country }}" {{ $selectedCountry == $country ? 'selected' : '' }}>
-                                {{ $country }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary mt-2">Apply Filter</button>
+<div class="container-fluid py-4">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Travel Package Management</h1>
+        <div class="d-flex gap-3">
+            <!-- Search Box -->
+            <form class="d-flex" action="{{ route('admin.travel-package.index') }}" method="GET">
+                <input type="text" name="search" class="form-control" placeholder="Search packages..." value="{{ request('search') }}">
+                <button class="btn btn-primary ms-2" type="submit">Search</button>
             </form>
+            <!-- Filter Dropdown -->
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    {{ $selectedCountry ?? 'All Countries' }}
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{{ route('admin.travel-package.index') }}">All Countries</a></li>
+                    @foreach($countries as $country)
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.travel-package.index', ['country' => $country]) }}">
+                                {{ $country }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+            <!-- Add Package Button -->
+            <a href="{{ route('admin.travel-package.create') }}" class="btn btn-primary">Add Package</a>
         </div>
-        
-
-        <!-- Add Package Button aligned to the right -->
-        <a href="{{ route('admin.travel-package.create') }}" class="btn btn-primary">Add Package</a>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Country</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($packages as $package)
-                <tr>
-                    <!-- Display Image -->
-                    <td>
-                        @if($package->image)
-                            <img src="{{ asset('storage/' . $package->image) }}" alt="{{ $package->name }}" width="50" height="50" class="rounded">
-                        @else
-                            <span>No Image</span>
-                        @endif
-                    </td>
-
-                    <!-- Display Name -->
-                    <td>{{ $package->name }}</td>
-
-                    <!-- Display Price -->
-                    <td>RM {{ number_format($package->price, 2) }}</td>
-
-                    <!-- Display Country -->
-                    <td>{{ $package->country }}</td>
-
-                    <!-- Actions -->
-                    <td>
-                        <div class="d-flex justify-content-start align-items-center">
-                            <!-- Visibility Dropdown -->
-                            <form action="{{ route('admin.travel-package.toggleVisibility', ['id' => $package->id]) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('PATCH')
-                                <div class="dropdown">
-                                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="visibilityDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                        {{ $package->is_visible ? 'Visible' : 'Invisible' }}
-                                    </button>
-                                    <ul class="dropdown-menu" aria-labelledby="visibilityDropdown">
-                                        <li>
-                                            <button class="dropdown-item" type="submit" name="visibility" value="1">Visible</button>
-                                        </li>
-                                        <li>
-                                            <button class="dropdown-item" type="submit" name="visibility" value="0">Invisible</button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </form>
-
-                            <!-- Edit Button -->
-                            <a href="{{ route('admin.travel-package.edit', ['travel_package' => $package->id]) }}" class="btn btn-warning btn-sm mx-2">Edit</a>
-
-                            <!-- Delete Button -->
-                            <form action="{{ route('admin.travel-package.destroy', ['travel_package' => $package->id]) }}" method="POST" style="display: inline;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this package?')">Delete</button>
-                            </form>
-
+    <!-- Statistics Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">Total Packages</h6>
+                            <h2 class="mb-0">{{ $packages->count() }}</h2>
                         </div>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="text-center">No packages found</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+                        <i class="fas fa-box fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">Active Packages</h6>
+                            <h2 class="mb-0">{{ $packages->where('is_visible', true)->count() }}</h2>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">Hidden Packages</h6>
+                            <h2 class="mb-0">{{ $packages->where('is_visible', false)->count() }}</h2>
+                        </div>
+                        <i class="fas fa-eye-slash fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">Countries</h6>
+                            <h2 class="mb-0">{{ count($countries) }}</h2>
+                        </div>
+                        <i class="fas fa-globe fa-2x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Packages Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Country</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($packages as $package)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>
+                                    @if($package->image)
+                                        <img src="{{ asset('storage/' . $package->image) }}" 
+                                             alt="{{ $package->name }}" 
+                                             width="50" 
+                                             height="50" 
+                                             class="rounded">
+                                    @else
+                                        <div class="text-muted"><i class="fas fa-image fa-2x"></i></div>
+                                    @endif
+                                </td>
+                                <td>{{ $package->name }}</td>
+                                <td>{{ $package->country }}</td>
+                                <td>RM {{ number_format($package->price, 2) }}</td>
+                                <!-- Update the Status column in the table -->
+                                <td>
+                                    <select class="form-select form-select-sm" 
+                                            onchange="updateStatus(this, {{ $package->id }})"
+                                            style="width: auto;">
+                                        <option value="Visible" {{ $package->is_visible ? 'selected' : '' }}>Visible</option>
+                                        <option value="Invisible" {{ !$package->is_visible ? 'selected' : '' }}>Invisible</option>
+                                    </select>
+                                </td>
+                                
+                                <!-- Update the Actions column, removing the delete form -->
+                                <td>
+                                    <a href="{{ route('admin.travel-package.edit', ['travel_package' => $package->id]) }}" 
+                                       class="btn btn-sm btn-info">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                </td>
+                                <!-- Remove the delete form that was here -->
+                                </tr>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted mb-0">No packages found</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if($packages instanceof \Illuminate\Pagination\LengthAwarePaginator)
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <div class="text-muted">
+                        Showing {{ $packages->firstItem() ?? 0 }} to {{ $packages->lastItem() ?? 0 }} of {{ $packages->total() }} results
+                    </div>
+                    <div>
+                        {{ $packages->links('pagination::bootstrap-5') }}
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 </div>
 @endsection
@@ -122,4 +182,33 @@ Admin Dashboard
 @section('scripts')
 <!-- Add Font Awesome CDN -->
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+<script>
+function updateStatus(selectElement, packageId) {
+    const status = selectElement.value === 'Visible' ? 1 : 0;
+    
+    fetch(`{{ url('admin/travel-package/toggle-visibility') }}/${packageId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ is_visible: status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Optional: Show success message
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show';
+            alert.innerHTML = `
+                Status updated successfully
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.querySelector('.card-body').insertBefore(alert, document.querySelector('.table-responsive'));
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
 @endsection

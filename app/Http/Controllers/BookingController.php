@@ -12,65 +12,51 @@ class BookingController extends Controller
     public function showBookingForm($packageId)
     {
         $package = TravelPackage::findOrFail($packageId);
-        $user = Auth::user(); // Get the logged-in user
-
+        $user = Auth::user();
         return view('customer.booking.form', compact('package', 'user'));
     }
 
-    public function storeBooking(Request $request, $packageId)
+    public function store(Request $request, $packageId)
     {
         $user = Auth::user();
-        $package = TravelPackage::findOrFail($packageId);
-
-        $request->validate([
-            'available_date' => 'required|date',
-            'customer_phone' => 'required|string|max:15',
-            'adults' => 'required|integer|min:1',
-            'children' => 'required|integer|min:0',
-            'infants' => 'required|integer|min:0',
-            'notes' => 'nullable|string|max:1000',
-        ]);
-
-        $totalPrice = ($request->adults + $request->children) * $package->price;
-
+        
         $booking = Booking::create([
-            'user_id' => $user->id,
-            'travel_package_id' => $package->id,
+            'travel_package_id' => $packageId,
+            'user_id' => auth()->id(),
             'customer_name' => $user->name,
             'customer_email' => $user->email,
-            'customer_phone' => $request->customer_phone,
+            'customer_phone' => $user->phone,
             'available_date' => $request->available_date,
-            'adults' => $request->adults,
-            'children' => $request->children,
-            'infants' => $request->infants,
-            'total_price' => $totalPrice,
-            'notes' => $request->notes,  // Store the notes
-            'payment_status' => 'pending',  // Set payment status to 'pending'
+            'booking_date' => now(),
+            'total_price' => $request->totalPrice,
+            'notes' => $request->notes,
+            'payment_status' => 'pending',
         ]);
 
-        // Redirect to the payment page for the user to proceed with payment
-        return redirect()->route('payment.page', ['bookingId' => $booking->id]);   
-     }
+        // Store travelers information
+        // Remove this update section as it's causing the error
+        // The booking already has customer_name from the create() call above
+        
+        // When saving travelers, ensure you're using proper parameter binding
+        foreach ($request->travelers as $travelerData) {
+            $booking->travelers()->create([
+                'name' => $travelerData['name'],
+                'ic_number' => $travelerData['ic'],
+                'category' => $travelerData['category']
+            ]);
+        }
 
+        return redirect()->route('payment.page', $booking->id);
+    }
 
     public function showMyBookings()
     {
         $user = Auth::user();
-
-        // Retrieve the user's bookings with travel package details
         $bookings = Booking::where('user_id', $user->id)
-            ->with('travelPackage') // Eager load related travel package data
-            ->orderBy('available_date', 'asc') // Keep the order by date for consistency
+            ->with('travelPackage')
+            ->orderBy('available_date', 'asc')
             ->get();
 
         return view('customer.booking.index', compact('bookings'));
     }
-
-    public function index()
-    {
-        $bookings = Booking::all();        
-        return view('admin.booking-list.index', compact('bookings'));
-    }
-
-
 }

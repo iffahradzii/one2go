@@ -23,58 +23,103 @@ Package Details
         <!-- Package Information -->
         <div class="col-md-6">
             <div class="card shadow-sm border-0 p-4">
-                <h3 class="text-success">Price: RM{{ number_format($package->price, 2) }}</h3>
-                <hr>
-                <p><strong>Available Dates:</strong></p>
-                <div>
-                    @foreach (json_decode($package->available_dates, true) as $date)
-                        <span class="badge bg-primary mb-1">{{ \Carbon\Carbon::parse($date)->format('d M') }}</span>
-                    @endforeach
+                <!-- Base Price -->
+                <div class="mb-4">
+                    <h3 class="text-success mb-2">Starting from RM{{ number_format($package->price, 2) }}</h3>
+                    <p class="text-muted small">*Price varies based on tour type and group size</p>
                 </div>
+
                 <hr>
 
-                <!-- Description Section -->
-                <p><strong>Description:</strong></p>
-                <div class="card bg-light p-3 mb-3">
+                <!-- Available Dates -->
+                <p><strong>Available Dates:</strong></p>
+                <div class="mb-4">
+                    @if(is_string($package->available_dates))
+                        @foreach (json_decode($package->available_dates, true) as $date)
+                            <span class="badge bg-primary mb-1">{{ \Carbon\Carbon::parse($date)->format('d M') }}</span>
+                        @endforeach
+                    @elseif(is_array($package->available_dates))
+                        @foreach ($package->available_dates as $date)
+                            <span class="badge bg-primary mb-1">{{ \Carbon\Carbon::parse($date)->format('d M') }}</span>
+                        @endforeach
+                    @endif
+                </div>
+
+                <!-- Overview Section -->
+                <p><strong>Overview:</strong></p>
+                <div class="card bg-light p-3 mb-4">
                     <p class="mb-0">{{ $package->description }}</p>
                 </div>
 
-                <!-- Itinerary Section -->
-                <p><strong>Itinerary:</strong></p>
-                <div class="card bg-light p-3 mb-3">
+                <!-- Highlights Section with all details -->
+                <p><strong>Trip Highlights:</strong></p>
+                <div class="card bg-light p-3 mb-4">
+                    <!-- Itinerary Preview -->
+                    <h6 class="mb-2">Daily Activities:</h6>
+                    <ul class="mb-3">
+                        @php
+                            $itinerary = is_string($package->itinerary) ? json_decode($package->itinerary, true) : $package->itinerary;
+                        @endphp
+                        @foreach ($itinerary as $day => $activities)
+                            <li><strong>{{ ucfirst($day) }}:</strong> {{ Str::limit($activities, 100) }}</li>
+                        @endforeach
+                    </ul>
+
+                    <!-- Inclusions -->
+                    <h6 class="mb-2">What's Included:</h6>
+                    <ul class="mb-3">
+                        @php
+                            $include = is_string($package->include) ? json_decode($package->include, true) : $package->include;
+                        @endphp
+                        @foreach ($include as $item)
+                            <li><i class="fas fa-check text-success me-2"></i>{{ $item }}</li>
+                        @endforeach
+                    </ul>
+
+                    <!-- Exclusions -->
+                    <h6 class="mb-2">What's Not Included:</h6>
                     <ul class="mb-0">
-                        @foreach (json_decode($package->itinerary, true) as $itinerary)
-                            <li>{{ $itinerary }}</li>
+                        @php
+                            $exclude = is_string($package->exclude) ? json_decode($package->exclude, true) : $package->exclude;
+                        @endphp
+                        @foreach ($exclude as $item)
+                            <li><i class="fas fa-times text-danger me-2"></i>{{ $item }}</li>
                         @endforeach
                     </ul>
                 </div>
 
-                <!-- Include Section -->
-                <p><strong>Include:</strong></p>
-                <div class="card bg-light p-3 mb-3">
-                    <ul class="mb-0">
-                        @foreach (json_decode($package->include, true) as $include)
-                            <li>{{ $include }}</li>
-                        @endforeach
-                    </ul>
+                <!-- Booking Options -->
+                <div class="mt-4">
+                    <h4 class="mb-3">Choose Your Tour Type:</h4>
+                    
+                    @auth
+                        <div class="d-grid gap-3">
+                            <a href="{{ route('booking.create', $package->id) }}" 
+                               class="btn btn-primary btn-lg">
+                                <i class="fas fa-users me-2"></i>Group Tour
+                                <small class="d-block">Join other travelers</small>
+                            </a>
+                            
+                            <a href="{{ route('private-booking.create', $package->id) }}" 
+                               class="btn btn-success btn-lg">
+                                <i class="fas fa-user-shield me-2"></i>Private Tour
+                                <small class="d-block">Exclusive for your group</small>
+                            </a>
+                        </div>
+                    @else
+                        <div class="d-grid gap-3">
+                            <a href="#" class="btn btn-primary btn-lg" onclick="showLoginAlert()">
+                                <i class="fas fa-users me-2"></i>Group Tour
+                                <small class="d-block">Join other travelers</small>
+                            </a>
+                            
+                            <a href="#" class="btn btn-success btn-lg" onclick="showLoginAlert()">
+                                <i class="fas fa-user-shield me-2"></i>Private Tour
+                                <small class="d-block">Exclusive for your group</small>
+                            </a>
+                        </div>
+                    @endauth
                 </div>
-
-                <!-- Exclude Section -->
-                <p><strong>Exclude:</strong></p>
-                <div class="card bg-light p-3 mb-3">
-                    <ul class="mb-0">
-                        @foreach (json_decode($package->exclude, true) as $exclude)
-                            <li>{{ $exclude }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-
-                <!-- Book Now Button -->
-                @auth
-                    <a href="{{ route('booking.form', $package->id) }}" class="btn btn-success btn-lg w-100">Book Now</a>
-                @else
-                    <a href="#" class="btn btn-success btn-lg w-100" onclick="showLoginAlert()">Book Now</a>
-                @endauth
             </div>
         </div>
     </div>
@@ -85,7 +130,7 @@ Package Details
 <script>
     function showLoginAlert() {
         alert('Please log in to proceed with booking.');
-        window.location.href = "{{ route('login') }}"; // Redirect to the login page
+        window.location.href = "{{ route('login') }}";
     }
 </script>
 @endsection

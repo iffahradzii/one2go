@@ -10,6 +10,7 @@ use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PrivateBookingController; // Add this line
 
 
 
@@ -41,7 +42,13 @@ Route::get('/email/verify', function () {
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    return redirect('/dashboard'); // Redirect to dashboard after successful verification
+    
+    // Explicitly update the email_verified_at timestamp
+    $user = $request->user();
+    $user->email_verified_at = now();
+    $user->save();
+    
+    return redirect('/dashboard')->with('success', 'Email verified successfully!');
 })->middleware(['auth', 'signed'])->name('verification.verify');
 
 Route::post('/email/verification-notification', function (Request $request) {
@@ -81,8 +88,14 @@ Route::prefix('admin')
     ->group(function () {
         Route::resource('travel-package', TravelPackageController::class);
         Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');
-        Route::get('bookings', [BookingController::class, 'index'])->name('booking.index');
-
+        
+        // Consolidated booking routes
+        Route::controller(App\Http\Controllers\Admin\BookingController::class)->group(function () {
+            Route::get('bookings', 'index')->name('booking.index');
+            Route::get('bookings/{booking}', 'show')->name('booking.show');
+            Route::patch('bookings/{booking}/status', 'updateStatus')->name('booking.updateStatus');
+            Route::delete('bookings/{booking}', 'destroy')->name('booking.destroy');
+        });
     });
 
     Route::patch('/admin/travel-package/{id}/toggle-visibility', [TravelPackageController::class, 'toggleVisibility'])->name('admin.travel-package.toggleVisibility');
@@ -134,3 +147,11 @@ Route::get('/payment/{bookingId}', [PaymentController::class, 'showPaymentPage']
 Route::post('/payment/process/{bookingId}', [PaymentController::class, 'processPayment'])->name('payment.process');
 Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
 Route::post('/payment/pay-later/{bookingId}', [PaymentController::class, 'payLater'])->name('payment.pay-later');
+
+// Existing routes
+Route::get('booking/{package}', [BookingController::class, 'create'])->name('booking.create');
+Route::post('booking/{package}', [BookingController::class, 'store'])->name('booking.store');
+
+// New private booking routes
+Route::get('private-booking/{package}', [PrivateBookingController::class, 'create'])->name('private-booking.create');
+Route::post('private-booking/{package}', [PrivateBookingController::class, 'store'])->name('private-booking.store');

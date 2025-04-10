@@ -45,4 +45,20 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the bookings associated with the user.
+     */
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * Get the private bookings associated with the user.
+     */
+    public function privateBookings()
+    {
+        return $this->hasMany(PrivateBooking::class);
+    }
 }

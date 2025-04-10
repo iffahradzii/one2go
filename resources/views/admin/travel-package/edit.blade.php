@@ -39,7 +39,10 @@ Admin Edit
         <div class="form-group">
             <label for="itinerary">Itinerary</label>
             <div id="itinerary-container">
-                @foreach (json_decode($package->itinerary, true) as $itinerary)
+                @php
+                    $itineraryData = is_string($package->itinerary) ? json_decode($package->itinerary, true) : $package->itinerary;
+                @endphp
+                @foreach ($itineraryData as $itinerary)
                     <textarea name="itinerary[]" class="form-control mb-2" rows="2">{{ $itinerary }}</textarea>
                 @endforeach
             </div>
@@ -53,7 +56,10 @@ Admin Edit
             @if (!empty($package->itinerary_pdfs))
                 <p>Current Itinerary PDFs:</p>
                 <ul>
-                    @foreach (json_decode($package->itinerary_pdfs, true) as $pdf)
+                    @php
+                        $itineraryPdfs = is_string($package->itinerary_pdfs) ? json_decode($package->itinerary_pdfs, true) : $package->itinerary_pdfs;
+                    @endphp
+                    @foreach ($itineraryPdfs as $pdf)
                         <li>
                             <a href="{{ asset('storage/' . $pdf) }}" target="_blank">{{ basename($pdf) }}</a>
                         </li>
@@ -66,7 +72,10 @@ Admin Edit
         <div class="form-group">
             <label for="include">Include</label>
             <div id="include-container">
-                @foreach (json_decode($package->include, true) as $include)
+                @php
+                    $includeData = is_string($package->include) ? json_decode($package->include, true) : $package->include;
+                @endphp
+                @foreach ($includeData as $include)
                     <textarea name="include[]" class="form-control mb-2" rows="2">{{ $include }}</textarea>
                 @endforeach
             </div>
@@ -80,7 +89,10 @@ Admin Edit
             @if (!empty($package->include_pdfs))
                 <p>Current Include PDFs:</p>
                 <ul>
-                    @foreach (json_decode($package->include_pdfs, true) as $pdf)
+                    @php
+                        $includePdfs = is_string($package->include_pdfs) ? json_decode($package->include_pdfs, true) : $package->include_pdfs;
+                    @endphp
+                    @foreach ($includePdfs as $pdf)
                         <li>
                             <a href="{{ asset('storage/' . $pdf) }}" target="_blank">{{ basename($pdf) }}</a>
                         </li>
@@ -93,7 +105,10 @@ Admin Edit
         <div class="form-group">
             <label for="exclude">Exclude</label>
             <div id="exclude-container">
-                @foreach (json_decode($package->exclude, true) as $exclude)
+                @php
+                    $excludeData = is_string($package->exclude) ? json_decode($package->exclude, true) : $package->exclude;
+                @endphp
+                @foreach ($excludeData as $exclude)
                     <textarea name="exclude[]" class="form-control mb-2" rows="2">{{ $exclude }}</textarea>
                 @endforeach
             </div>
@@ -107,7 +122,10 @@ Admin Edit
             @if (!empty($package->exclude_pdfs))
                 <p>Current Exclude PDFs:</p>
                 <ul>
-                    @foreach (json_decode($package->exclude_pdfs, true) as $pdf)
+                    @php
+                        $excludePdfs = is_string($package->exclude_pdfs) ? json_decode($package->exclude_pdfs, true) : $package->exclude_pdfs;
+                    @endphp
+                    @foreach ($excludePdfs as $pdf)
                         <li>
                             <a href="{{ asset('storage/' . $pdf) }}" target="_blank">{{ basename($pdf) }}</a>
                         </li>
@@ -120,7 +138,10 @@ Admin Edit
         <div class="form-group">
             <label for="available_dates">Available Dates</label>
             <div id="available-dates-container">
-                @foreach (json_decode($package->available_dates, true) as $date)
+                @php
+                    $availableDates = is_string($package->available_dates) ? json_decode($package->available_dates, true) : $package->available_dates;
+                @endphp
+                @foreach ($availableDates as $date)
                     <input type="date" name="available_dates[]" class="form-control mb-2" value="{{ $date }}">
                 @endforeach
             </div>

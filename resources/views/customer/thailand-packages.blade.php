@@ -45,16 +45,7 @@ Thailand
                         <div class="mt-auto">
                             <a href="{{ route('package.details', ['country' => strtolower($package->country), 'id' => $package->id]) }}" 
                                class="btn btn-outline-primary w-100 mb-2">View Details</a>
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('booking.create', $package->id) }}" 
-                                   class="btn btn-primary flex-grow-1">
-                                    <i class="fas fa-users me-1"></i> Group Tour
-                                </a>
-                                <a href="{{ route('private-booking.create', $package->id) }}" 
-                                   class="btn btn-success flex-grow-1">
-                                    <i class="fas fa-user-shield me-1"></i> Private Tour
-                                </a>
-                            </div>
+                           
                         </div>
                     </div>
                 </div>

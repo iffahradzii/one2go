@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Booking extends Model
+class PrivateBooking extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'user_id',
         'travel_package_id',
@@ -16,12 +13,11 @@ class Booking extends Model
         'customer_email',
         'customer_phone',
         'available_date',
-        'adults',
-        'children',
-        'infants',
+        'base_price',
+        'additional_price',
         'total_price',
-        'payment_status',  // Add this line
-        'notes',
+        'custom_itinerary',
+        'payment_status'
     ];
 
     protected $attributes = [
@@ -41,15 +37,24 @@ class Booking extends Model
 
     public function travelPackage()
     {
-        return $this->belongsTo(TravelPackage::class, 'travel_package_id');
+        return $this->belongsTo(TravelPackage::class);
     }
 
     /**
-     * Get the travelers for the booking.
+     * Get the participants for the private booking.
      */
-    // Make sure this relationship exists in your Booking model
-    public function travelers()
+    public function participants()
     {
-        return $this->hasMany(BookingTraveler::class);
+        return $this->hasMany(PrivateBookingParticipant::class);
+    }
+
+    /**
+     * Get the additional activities for the private booking.
+     */
+    public function additionalActivities()
+    {
+        return $this->belongsToMany(AdditionalActivity::class, 'private_booking_activities')
+            ->withPivot('price_at_time_of_booking')
+            ->withTimestamps();
     }
 }

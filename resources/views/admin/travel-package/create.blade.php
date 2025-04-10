@@ -1,97 +1,214 @@
 @extends('layout.layoutAdmin')
-@section("title")
-Admin Create
-@endsection
+
+@section('title', 'Create Travel Package')
 
 @section('content')
 <div class="container">
     <h1>Create Travel Package</h1>
     <form action="{{ route('admin.travel-package.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <div class="form-group">
-            <label for="name">Package Name</label>
-            <input type="text" name="name" class="form-control" required>
-        </div>
+        <!-- Basic Information -->
+        <div class="card mb-4">
+            <div class="card-header">Basic Information</div>
+            <div class="card-body">
+                <div class="form-group mb-3">
+                    <label for="name">Package Name</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
 
-        <div class="form-group">
-            <label for="country">Country</label>
-            <select name="country" class="form-control" required>
-                <option value="Indonesia">Indonesia</option>
-                <option value="Thailand">Thailand</option>
-                <option value="Vietnam">Vietnam</option>
-                <option value="South Korea">South Korea</option>
-            </select>
-        </div>
+                <div class="form-group mb-3">
+                    <label for="country">Country</label>
+                    <select name="country" class="form-control" required>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Thailand">Thailand</option>
+                        <option value="Vietnam">Vietnam</option>
+                        <option value="South Korea">South Korea</option>
+                    </select>
+                </div>
 
-        <div class="form-group">
-            <label for="price">Price</label>
-            <input type="number" name="price" step="0.01" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-            <label for="description">Description</label>
-            <textarea name="description" class="form-control" rows="4" required></textarea>
-        </div>
-
-        <!-- Multi-line fields for Itinerary -->
-        <div class="form-group">
-            <label for="itinerary">Itinerary</label>
-            <div id="itinerary-container">
-                <textarea name="itinerary[]" class="form-control mb-2" rows="2" placeholder="Day 1: Activities"></textarea>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label for="price">Base Price</label>
+                            <input type="number" name="price" step="0.01" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label for="duration">Duration</label>
+                            <input type="number" name="duration" id="duration" class="form-control" min="1" placeholder="Number of days" required>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
-            <button type="button" id="add-itinerary" class="btn btn-secondary btn-sm">Add Itinerary Day</button>
-        </div>
-        <div class="form-group">
-            <label for="itinerary_pdfs">Upload PDFs for Itinerary</label>
-            <input type="file" name="itinerary_pdfs[]" multiple class="form-control-file">
         </div>
 
-        <!-- Multi-line fields for Include -->
-        <div class="form-group">
-            <label for="include">Include</label>
-            <div id="include-container">
-                <textarea name="include[]" class="form-control mb-2" rows="2" placeholder="Include item"></textarea>
+        <!-- Itinerary Section -->
+        <div class="card mb-4">
+            <div class="card-header">Daily Itinerary</div>
+            <div class="card-body">
+                <div id="itinerary-days-container">
+                    <!-- Dynamic itinerary days will be added here -->
+                </div>
             </div>
-            <button type="button" id="add-include" class="btn btn-secondary btn-sm">Add Include</button>
-        </div>
-        <div class="form-group">
-            <label for="include_pdfs">Upload PDFs for Include</label>
-            <input type="file" name="include_pdfs[]" multiple class="form-control-file">
         </div>
 
-        <!-- Multi-line fields for Exclude -->
-        <div class="form-group">
-            <label for="exclude">Exclude</label>
-            <div id="exclude-container">
-                <textarea name="exclude[]" class="form-control mb-2" rows="2" placeholder="Exclude item"></textarea>
+        <!-- Include/Exclude Section -->
+        <div class="card mb-4">
+            <div class="card-header">Package Details</div>
+            <div class="card-body">
+                <div class="form-group mb-3">
+                    <label for="include">Include</label>
+                    <div id="include-container">
+                        <textarea name="include[]" class="form-control mb-2" rows="2" placeholder="Include item"></textarea>
+                    </div>
+                    <button type="button" id="add-include" class="btn btn-secondary btn-sm">Add Include</button>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="exclude">Exclude</label>
+                    <div id="exclude-container">
+                        <textarea name="exclude[]" class="form-control mb-2" rows="2" placeholder="Exclude item"></textarea>
+                    </div>
+                    <button type="button" id="add-exclude" class="btn btn-secondary btn-sm">Add Exclude</button>
+                </div>
             </div>
-            <button type="button" id="add-exclude" class="btn btn-secondary btn-sm">Add Exclude</button>
-        </div>
-        <div class="form-group">
-            <label for="exclude_pdfs">Upload PDFs for Exclude</label>
-            <input type="file" name="exclude_pdfs[]" multiple class="form-control-file">
         </div>
 
-        <!-- Available Dates -->
-        <div class="form-group">
-            <label for="available_dates">Available Dates</label>
-            <div id="available-dates-container">
-                <input type="date" name="available_dates[]" class="form-control mb-2">
+        <!-- Additional Activities -->
+        <div class="card mb-4">
+            <div class="card-header">Additional Activities</div>
+            <div class="card-body">
+                <div id="activities-container">
+                    <div class="activity-item mb-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="text" name="activities[]" class="form-control" placeholder="Activity Name">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text">RM</span>
+                                    <input type="number" name="activity_prices[]" class="form-control" step="0.01" placeholder="Price per person">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="add-activity" class="btn btn-secondary btn-sm">Add Activity</button>
             </div>
-            <button type="button" id="add-available-date" class="btn btn-secondary btn-sm">Add Available Date</button>
         </div>
 
-        <div class="form-group">
-            <label for="image">Main Image</label>
-            <input type="file" name="image" class="form-control-file">
+        <!-- Dates and Image -->
+        <div class="card mb-4">
+            <div class="card-header">Available Dates & Image</div>
+            <div class="card-body">
+                <div class="form-group mb-3">
+                    <label for="available_dates">Available Dates</label>
+                    <div id="available-dates-container">
+                        <input type="date" name="available_dates[]" class="form-control mb-2">
+                    </div>
+                    <button type="button" id="add-available-date" class="btn btn-secondary btn-sm">Add Date</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="image">Main Image</label>
+                    <input type="file" name="image" class="form-control" required>
+                </div>
+            </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="submit" class="btn btn-primary">Create Package</button>
     </form>
 </div>
 
 @endsection
 
 @section('scripts')
-    @include('partials.dynamic-fields-js')
+<script>
+// Make sure DOM is fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    const durationInput = document.getElementById('duration');
+    if (durationInput) {
+        durationInput.addEventListener('change', function() {
+            const days = parseInt(this.value) || 0;
+            const container = document.getElementById('itinerary-days-container');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= days; i++) {
+                container.innerHTML += `
+                    <div class="mb-3">
+                        <label class="fw-bold">Day ${i}</label>
+                        <textarea name="itinerary[day${i}]" class="form-control" rows="3" required
+                            placeholder="Enter activities for Day ${i}"></textarea>
+                    </div>
+                `;
+            }
+        });
+    }
+
+    // Add Include Item
+    document.getElementById('add-include').addEventListener('click', function() {
+        const container = document.getElementById('include-container');
+        container.insertAdjacentHTML('beforeend', `
+            <div class="input-group mb-2">
+                <textarea name="include[]" class="form-control" rows="2" placeholder="Include item"></textarea>
+                <button type="button" class="btn btn-danger remove-item">×</button>
+            </div>
+        `);
+    });
+
+    // Add Exclude Item
+    document.getElementById('add-exclude').addEventListener('click', function() {
+        const container = document.getElementById('exclude-container');
+        container.insertAdjacentHTML('beforeend', `
+            <div class="input-group mb-2">
+                <textarea name="exclude[]" class="form-control" rows="2" placeholder="Exclude item"></textarea>
+                <button type="button" class="btn btn-danger remove-item">×</button>
+            </div>
+        `);
+    });
+
+    // Add Activity
+    document.getElementById('add-activity').addEventListener('click', function() {
+        const container = document.getElementById('activities-container');
+        container.insertAdjacentHTML('beforeend', `
+            <div class="activity-item mb-3">
+                <div class="row">
+                    <div class="col-md-5">
+                        <input type="text" name="activities[]" class="form-control" placeholder="Activity Name" required>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text">RM</span>
+                            <input type="number" name="activity_prices[]" class="form-control" step="0.01" placeholder="Price per person" required>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger remove-item">Remove</button>
+                    </div>
+                </div>
+            </div>
+        `);
+    });
+
+    // Add Available Date
+    document.getElementById('add-available-date').addEventListener('click', function() {
+        const container = document.getElementById('available-dates-container');
+        container.insertAdjacentHTML('beforeend', `
+            <div class="input-group mb-2">
+                <input type="date" name="available_dates[]" class="form-control">
+                <button type="button" class="btn btn-danger remove-item">×</button>
+            </div>
+        `);
+    });
+
+    // Remove item functionality (for all removable items)
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-item')) {
+            e.target.closest('.input-group, .activity-item').remove();
+        }
+    });
+});
+</script>
 @endsection

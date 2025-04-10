@@ -246,10 +246,7 @@ class TravelPackageController extends Controller
     // Method to show package details
     public function showPackageDetails($country, $id)
     {
-        // Fetch the specific package by its ID and country
-        $package = TravelPackage::where('country', $country)->findOrFail($id);
-    
-        // Return the view with the package details
+        $package = TravelPackage::findOrFail($id);
         return view('customer.package-details', compact('package'));
     }
     
