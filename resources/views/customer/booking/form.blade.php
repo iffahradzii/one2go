@@ -161,16 +161,13 @@ function addTraveler() {
                            class="form-control ic-number" 
                            pattern="[0-9]{12}"
                            maxlength="12"
-                           placeholder="YYMMDDXXXXXX"
                            onchange="updateTravelerAge(${travelerId}, this.value)"
                            required>
-                    <small class="form-text text-muted">Format: YYMMDDXXXXXX (12 digits)</small>
+                    <small class="form-text text-muted">Format: 000000-00-0000</small>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Age Category</label>
-                    <input type="text" class="form-control" id="age-category-${travelerId}" readonly>
+                    <input type="hidden" class="form-control" id="age-category-${travelerId}" readonly>
                     <input type="hidden" name="travelers[${travelerId}][category]" id="category-${travelerId}">
-                    <small class="form-text text-muted">Automatically determined from IC number</small>
                 </div>
             </div>
         </div>

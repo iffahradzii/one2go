@@ -83,12 +83,12 @@
 
                         <!-- Participants -->
                         <div class="mb-4 p-3 bg-light rounded">
-                            <h4 class="mb-3"><i class="fas fa-users me-2"></i>Participants</h4>
+                            <h4 class="mb-3"><i class="fas fa-users me-2"></i>Travelers Information</h4>
                             <p class="text-muted small mb-3">Please provide details for all travelers</p>
                             <div id="participants-container">
                                 <div class="participant-row mb-3 p-3 border rounded">
                                     <div class="d-flex justify-content-between mb-2">
-                                        <span class="fw-bold">Participant #1</span>
+                                        <span class="fw-bold">Traveler #1</span>
                                     </div>
                                     <div class="row g-3">
                                         <div class="col-md-6">
@@ -104,7 +104,7 @@
                                 </div>
                             </div>
                             <button type="button" class="btn btn-outline-primary mt-2" id="addParticipant">
-                                <i class="fas fa-plus"></i> Add Participant
+                                <i class="fas fa-plus"></i> Add Traveler
                             </button>
                         </div>
 
@@ -234,22 +234,36 @@
                     <h4 class="card-title mb-0">Price Summary</h4>
                 </div>
                 <div class="card-body">
+                    <h5 class="mb-3">{{ $package->name }}</h5>
+                    <p class="mb-3"><i class="fas fa-map-marker-alt me-2 text-primary"></i>{{ $package->country ?? $package->location }}</p>
+                    <p class="mb-3"><i class="fas fa-clock me-2 text-primary"></i>{{ $package->days ?? $package->duration }} Days</p>
+                    
+                    <hr>
+                    
                     <div class="mb-3">
                         <div class="d-flex justify-content-between mb-2">
-                            <span>Base Price:</span>
-                            <span class="fw-bold">RM {{ number_format($package->price, 2) }}</span>
-                        </div>
-                        <div id="activities-price" class="d-flex justify-content-between mb-2">
-                            <span>Additional Activities:</span>
-                            <span>RM 0.00</span>
-                        </div>
-                        <hr>
-                        <div class="d-flex justify-content-between fw-bold fs-5">
-                            <span>Total Price:</span>
-                            <span id="total-price" class="text-primary">RM {{ number_format($package->price, 2) }}</span>
+                            <span>Number of Travelers:</span>
+                            <span id="travelerCount" class="fw-bold">1</span>
                         </div>
                     </div>
-                    <div class="alert alert-info small mb-0">
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Base Price:</span>
+                        <span class="fw-bold">RM {{ number_format($package->price, 2) }}</span>
+                    </div>
+                    <div id="activities-price" class="d-flex justify-content-between mb-2">
+                        <span>Additional Activities:</span>
+                        <span>RM 0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between fw-bold fs-5 mt-3">
+                        <span>Total Price:</span>
+                        <span id="total-price" class="text-primary">RM {{ number_format($package->price, 2) }}</span>
+                        <input type="hidden" name="total_price" id="totalPriceInput" value="{{ $package->price }}">
+                    </div>
+                    
+                    <div class="alert alert-info small mt-3 mb-0">
                         <i class="fas fa-info-circle me-2"></i>
                         Select your travel date and optional activities to customize your booking.
                     </div>
