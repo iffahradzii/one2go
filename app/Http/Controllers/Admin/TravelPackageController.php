@@ -327,7 +327,7 @@ class TravelPackageController extends Controller
         $packages = TravelPackage::where('country', 'Thailand')
         ->where('is_visible', '!=', 0)
         ->get(); // Retrieve all Thailand packages
-        return view('customer\thailand-packages', compact('packages'));
+        return view('customer.thailand-packages', compact('packages'));
     }
 
     // Method to show Vietnam packages
@@ -336,7 +336,7 @@ class TravelPackageController extends Controller
         $packages = TravelPackage::where('country', 'Vietnam')
         ->where('is_visible', '!=', 0)
         ->get(); // Retrieve all Vietnam packages
-        return view('customer\vietnam-packages', compact('packages'));
+        return view('customer.vietnam-packages', compact('packages'));
     }
 
     public function showIndonesiaPackages()
@@ -347,7 +347,7 @@ class TravelPackageController extends Controller
         ->get();
         
         // Return the view with the fetched packages
-        return view('customer\indonesia-packages', compact('packages'));
+        return view('customer.indonesia-packages', compact('packages'));
     }
 
     public function showSouthKoreaPackages()
@@ -358,7 +358,7 @@ class TravelPackageController extends Controller
         ->get();
         
         // Return the view with the fetched packages
-        return view('customer\southkorea-packages', compact('packages'));
+        return view('customer.southkorea-packages', compact('packages'));
     }
 
 
