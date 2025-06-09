@@ -16,7 +16,7 @@ Package Details
         <!-- Package Image -->
         <div class="col-md-6">
             <div class="card shadow-sm border-0">
-                <img src="{{ asset('storage/' . $package->image) }}" class="card-img-top img-fluid" alt="{{ $package->name }}">
+                <img src="{{ asset($package->image) }}" class="card-img-top img-fluid" alt="{{ $package->name }}">
             </div>
         </div>
 
