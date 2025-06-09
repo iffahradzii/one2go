@@ -121,7 +121,7 @@
                 <div class="form-group mb-3">
                     <label for="available_dates">Available Dates</label>
                     <div id="available-dates-container">
-                        <input type="date" name="available_dates[]" class="form-control mb-2" value="{{ old('available_dates.0') }}">
+                        <input type="date" name="available_dates[]" class="form-control mb-2" value="{{ old('available_dates.0') }}" min="{{ date('Y-m-d', strtotime('+14 days')) }}">
                     </div>
                     <button type="button" id="add-available-date" class="btn btn-secondary btn-sm">Add Date</button>
                 </div>
@@ -215,9 +215,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add Available Date
     document.getElementById('add-available-date').addEventListener('click', function() {
         const container = document.getElementById('available-dates-container');
+        const minDate = new Date();
+        minDate.setDate(minDate.getDate() + 14); // Add 14 days to current date
+        const minDateStr = minDate.toISOString().split('T')[0];
+        
         container.insertAdjacentHTML('beforeend', `
             <div class="input-group mb-2">
-                <input type="date" name="available_dates[]" class="form-control">
+                <input type="date" name="available_dates[]" class="form-control" min="${minDateStr}">
                 <button type="button" class="btn btn-danger remove-item">×</button>
             </div>
         `);

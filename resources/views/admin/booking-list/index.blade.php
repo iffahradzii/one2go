@@ -1,32 +1,31 @@
 @extends('layout.layoutAdmin')
 
-@section('title', 'Booking Management')
+@section('title', 'Booking Management ')
 
 @section('content')
 <div class="container-fluid py-4">
     <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">Booking Management</h1>
-        <div class="d-flex gap-3">
-            <!-- Search Box -->
-            <form class="d-flex" action="{{ route('admin.booking.index') }}" method="GET">
-                <input type="text" name="search" class="form-control" placeholder="Search bookings..." value="{{ request('search') }}">
-                <button class="btn btn-primary ms-2" type="submit">Search</button>
-            </form>
-            <!-- Filter Dropdown -->
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    {{ request('status', 'All Status') }}
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{{ route('admin.booking.index') }}">All Status</a></li>
-                    <li><a class="dropdown-item" href="{{ route('admin.booking.index', ['status' => 'pending']) }}">Pending</a></li>
-                    <li><a class="dropdown-item" href="{{ route('admin.booking.index', ['status' => 'paid']) }}">Paid</a></li>
-                    <li><a class="dropdown-item" href="{{ route('admin.booking.index', ['status' => 'cancelled']) }}">Cancelled</a></li>
-                </ul>
-            </div>
+    <h1 class="h3">Booking Management General</h1>
+    <div class="d-flex gap-3 align-items-start flex-wrap">
+        <!-- Search Box -->
+       
+
+        <!-- Filter Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-primary uniform-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                {{ ucfirst(request('status', 'All Status')) }}
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ route('admin.booking.index') }}">All Status</a></li>
+                <li><a class="dropdown-item" href="{{ route('admin.booking.index', ['status' => 'pending']) }}">Pending</a></li>
+                <li><a class="dropdown-item" href="{{ route('admin.booking.index', ['status' => 'paid']) }}">Paid</a></li>
+                <li><a class="dropdown-item" href="{{ route('admin.booking.index', ['status' => 'cancelled']) }}">Cancelled</a></li>
+            </ul>
         </div>
     </div>
+</div>
+
 
     <!-- Statistics Cards -->
     <div class="row g-3 mb-4">
@@ -110,7 +109,7 @@
                                     <div class="fw-bold">{{ $booking->customer_name }}</div>
                                     <small class="text-muted">{{ $booking->customer_email }}</small>
                                 </td>
-                                <td>{{ $booking->travelPackage->name ?? 'N/A' }}</td>
+                                <td>{{ $booking->travelPackage ? $booking->travelPackage->name : 'Unknown Package' }}</td>
                                 <td>{{ \Carbon\Carbon::parse($booking->available_date)->format('d M Y') }}</td>
                                 <td>
                                     <div class="small">
@@ -141,6 +140,8 @@
                                            title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        
+                                        @if($booking->payment_status != 'cancelled')
                                         <button type="button" 
                                                 class="btn btn-sm btn-success" 
                                                 data-bs-toggle="modal" 
@@ -148,18 +149,8 @@
                                                 title="Update Status">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <form action="{{ route('admin.booking.destroy', $booking->id) }}" 
-                                              method="POST" 
-                                              class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" 
-                                                    class="btn btn-sm btn-danger" 
-                                                    onclick="return confirm('Are you sure you want to delete this booking?')"
-                                                    title="Delete Booking">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                        @endif
+                                        
                                     </div>
                                 </td>
                             </tr>
@@ -191,4 +182,10 @@
 @foreach($bookings as $booking)
     @include('admin.booking-list.partials.status-modal', ['booking' => $booking])
 @endforeach
+@endsection
+
+@section('scripts')
+<script>
+    // Additional scripts if needed
+</script>
 @endsection

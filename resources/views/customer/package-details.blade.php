@@ -31,19 +31,34 @@ Package Details
 
                 <hr>
 
-                <!-- Available Dates -->
-                <p><strong>Available Dates:</strong></p>
-                <div class="mb-4">
-                    @if(is_string($package->available_dates))
-                        @foreach (json_decode($package->available_dates, true) as $date)
-                            <span class="badge bg-primary mb-1">{{ \Carbon\Carbon::parse($date)->format('d M') }}</span>
-                        @endforeach
-                    @elseif(is_array($package->available_dates))
-                        @foreach ($package->available_dates as $date)
-                            <span class="badge bg-primary mb-1">{{ \Carbon\Carbon::parse($date)->format('d M') }}</span>
-                        @endforeach
-                    @endif
-                </div>
+              <!-- Available Dates -->
+<p><strong>Available Dates:</strong></p>
+<div class="mb-4">
+    @php
+        use Carbon\Carbon;
+
+        $today = Carbon::today();
+        $futureDate = $today->copy()->addDays(14); // Date 14 days from now
+        $rawDates = is_string($package->available_dates)
+            ? json_decode($package->available_dates, true)
+            : $package->available_dates;
+
+        // Filter only dates at least 14 days in the future
+        $validDates = collect($rawDates)->filter(function ($date) use ($futureDate) {
+            return Carbon::parse($date)->greaterThanOrEqualTo($futureDate);
+        });
+    @endphp
+
+    @if($validDates->isNotEmpty())
+        @foreach($validDates as $date)
+            <span class="badge bg-primary mb-1">{{ Carbon::parse($date)->format('d M') }}</span>
+        @endforeach
+    @else
+        <div class="text-danger">No available dates at the moment.</div>
+    @endif
+</div>
+
+
 
                 <!-- Overview Section -->
                 <p><strong>Overview:</strong></p>

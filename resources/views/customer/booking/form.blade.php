@@ -14,43 +14,47 @@
                     <form action="{{ route('booking.store', $package->id) }}" method="POST" id="bookingForm">
                         @csrf
                         
-                        <!-- Customer Details -->
-                        <div class="mb-4 p-3 bg-light rounded">
-                            <h4 class="mb-3"><i class="fas fa-user-circle me-2"></i>Contact Information</h4>
-                            <div class="row g-3">
-                                <!-- Email and Phone from database -->
-                                <div class="col-md-6">
-                                    <label class="form-label">Email</label>
-                                    <input type="email" name="customer_email" class="form-control" value="{{ $user->email }}" readonly>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Phone</label>
-                                    <input type="tel" name="customer_phone" class="form-control" value="{{ $user->phone ?? '' }}" readonly>
-                                </div>
-                                
-                                <!-- Travel Date -->
-                                <div class="col-12 mt-4">
-                                    <label class="form-label fw-bold">Travel Date</label>
-                                    <select name="available_date" class="form-select" id="available_date" required>
-                                        <option value="">Select an available date</option>
-                                        @php
-                                            // Handle available dates properly
-                                            $availableDates = is_string($package->available_dates) 
-                                                ? json_decode($package->available_dates, true) 
-                                                : $package->available_dates;
-                                        @endphp
-                                        
-                                        @if(is_array($availableDates) && !empty($availableDates))
-                                            @foreach($availableDates as $date)
-                                                <option value="{{ $date }}">{{ \Carbon\Carbon::parse($date)->format('d M Y') }} ({{ \Carbon\Carbon::parse($date)->format('l') }})</option>
-                                            @endforeach
-                                        @else
-                                            <option value="" disabled>No available dates found</option>
-                                        @endif
-                                    </select>
-                                </div>
-                            </div>
+                    <!-- Date Selection -->
+                    <div class="mb-4 p-3 bg-light rounded">
+                        <h4 class="mb-3"><i class="far fa-calendar-alt me-2"></i>Select Travel Date</h4>
+                        <p class="text-muted small mb-3">Choose your preferred travel date</p>
+                        
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="date_option" id="predefinedDate" value="predefined" checked>
+                            <label class="form-check-label" for="predefinedDate">
+                                Choose from available dates
+                            </label>
                         </div>
+                        
+                        <!-- Date Selection section -->
+                        <div id="predefined_dates_container" class="mb-3">
+                            <select class="form-select" id="available_date_select" name="available_date" required>
+                                <option value="">Select a date</option>
+                                @php
+                                    use Carbon\Carbon;
+
+                                    $today = Carbon::today();
+                                    $futureDate = $today->copy()->addDays(14); // Date 14 days from now
+                                    $availableDates = is_string($package->available_dates) 
+                                        ? json_decode($package->available_dates, true) 
+                                        : $package->available_dates;
+                                @endphp
+                                
+                                @if(is_array($availableDates) && !empty($availableDates))
+                                    @foreach($availableDates as $date)
+                                        @if(Carbon::parse($date)->greaterThanOrEqualTo($futureDate))
+                                            <option value="{{ $date }}">{{ Carbon::parse($date)->format('d F Y') }}</option>
+                                        @endif
+                                    @endforeach
+                                @endif
+                            </select>
+                            
+                            @if(!isset($availableDates) || !is_array($availableDates) || empty(array_filter($availableDates, fn($d) => Carbon::parse($d)->greaterThanOrEqualTo($futureDate))))
+                                <div class="text-danger mt-2">No available dates found. Please select a custom date.</div>
+                            @endif
+                        </div>
+                    </div>
+                  
 
                         <!-- Travelers Information -->
                         <div class="mb-4 p-3 bg-light rounded">
@@ -71,6 +75,9 @@
                             <textarea name="notes" id="notes" class="form-control" rows="4" 
                                     placeholder="Examples: Dietary requirements, accessibility needs, etc."></textarea>
                         </div>
+
+                        <!-- Hidden input for total_price inside the form -->
+                        <input type="hidden" name="total_price" id="totalPriceInput" value="0">
 
                         <button type="submit" class="btn btn-primary btn-lg w-100">
                             <i class="fas fa-credit-card me-2"></i>Continue to Payment
@@ -117,7 +124,7 @@
                     <div class="d-flex justify-content-between fw-bold fs-5 mt-3">
                         <span>Total Price:</span>
                         <span id="total_price" class="text-primary">RM 0.00</span>
-                        <input type="hidden" name="totalPrice" id="totalPriceInput" value="0">
+                        <!-- Remove this duplicate hidden input -->
                     </div>
                     
                     <div class="alert alert-info small mt-3 mb-0">
@@ -161,10 +168,12 @@ function addTraveler() {
                            class="form-control ic-number" 
                            pattern="[0-9]{12}"
                            maxlength="12"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                            onchange="updateTravelerAge(${travelerId}, this.value)"
                            required>
                     <small class="form-text text-muted">Format: 000000-00-0000</small>
                 </div>
+                
                 <div class="col-md-6">
                     <input type="hidden" class="form-control" id="age-category-${travelerId}" readonly>
                     <input type="hidden" name="travelers[${travelerId}][category]" id="category-${travelerId}">
@@ -176,30 +185,59 @@ function addTraveler() {
 }
 
 function updateTravelerAge(id, icNumber) {
+    console.log(`Updating age for traveler ${id} with IC: ${icNumber}`);
+    
     if (icNumber.length === 12) {
-        const year = parseInt(icNumber.substring(0, 2));
-        const month = parseInt(icNumber.substring(2, 4)) - 1;
-        const day = parseInt(icNumber.substring(4, 6));
-        
-        // Calculate full year (assuming 20xx for years 00-23, 19xx for years 24-99)
-        const fullYear = year + (year <= 23 ? 2000 : 1900);
-        const birthDate = new Date(fullYear, month, day);
-        const ageInYears = (today - birthDate) / (365.25 * 24 * 60 * 60 * 1000);
+        // Get current date
+        const today = new Date();
 
+        // Extract year, month, day from IC number
+        const yearPrefix = parseInt(icNumber.substring(0, 2), 10);
+        const month = parseInt(icNumber.substring(2, 4), 10) - 1; // JS months are 0-indexed
+        const day = parseInt(icNumber.substring(4, 6), 10);
+
+        const currentYear = today.getFullYear();
+        const currentYearLastTwoDigits = currentYear % 100;
+
+        // Determine full year
+        const fullYear = yearPrefix > currentYearLastTwoDigits ? 1900 + yearPrefix : 2000 + yearPrefix;
+
+        // Create birthdate
+        const birthDate = new Date(fullYear, month, day);
+
+        // Calculate age
+        let age = currentYear - fullYear;
+        if (
+            today.getMonth() < month || 
+            (today.getMonth() === month && today.getDate() < day)
+        ) {
+            age--;
+        }
+
+        // Determine age category
         let category;
-        if (ageInYears >= 12) {
+        if (age >= 12) {
             category = 'Adult';
-        } else if (ageInYears >= 2) {
+        } else if (age >= 2) {
             category = 'Child';
         } else {
             category = 'Infant';
         }
 
+        // Add debug logging
+        console.log(`Calculated age: ${age}, Category: ${category}`);
+        
+        // Update DOM elements
         document.getElementById(`age-category-${id}`).value = category;
         document.getElementById(`category-${id}`).value = category;
+        
+        // Update price
         updateTotalPrice();
+    } else {
+        console.log(`IC number length is not 12: ${icNumber.length}`);
     }
 }
+
 
 function removeTraveler(id) {
     document.getElementById(`traveler-${id}`).remove();
@@ -239,15 +277,96 @@ function updateTotalPrice() {
     document.getElementById('childrenCount').textContent = children;
     document.getElementById('infantsCount').textContent = infants;
 
+  
+
     // Calculate total price
     const totalPrice = (adults * basePrice) + (children * basePrice * childDiscount);
+    
+    // Make sure we're updating the input inside the form
     document.getElementById('totalPriceInput').value = totalPrice.toFixed(2);
     document.getElementById('total_price').textContent = `RM ${totalPrice.toFixed(2)}`;
+    
+    // Set the form submission flag
+    window.canSubmitForm = adults > 0;
+    
+    console.log("Total price updated to: " + totalPrice.toFixed(2)); // Debug log
 }
 
 // Add first traveler by default
 document.addEventListener('DOMContentLoaded', function() {
     addTraveler();
+});
+
+// Add this to your script section
+document.getElementById('bookingForm').addEventListener('submit', function(e) {
+    console.log('Form submission attempted');
+    
+    // Check if travel date is selected
+    const travelDate = document.getElementById('available_date_select').value;
+    if (!travelDate) {
+        e.preventDefault();
+        alert('Please select a travel date');
+        console.log('Form submission prevented: No travel date selected');
+        return;
+    }
+    
+    // Check if there are any travelers
+    const travelerRows = document.querySelectorAll('.traveler-row');
+    if (travelerRows.length === 0) {
+        e.preventDefault();
+        alert('Please add at least one traveler');
+        console.log('Form submission prevented: No travelers added');
+        return;
+    }
+    
+    // Check if all travelers have categories assigned
+    const categories = document.querySelectorAll('[id^="category-"]');
+    let allCategoriesSet = true;
+    let hasAdult = false;
+    
+    categories.forEach(category => {
+        if (!category.value) {
+            allCategoriesSet = false;
+            console.log(`Missing category for traveler with element ID: ${category.id}`);
+        }
+        if (category.value === 'Adult') {
+            hasAdult = true;
+        }
+    });
+    
+    // Check if at least one adult is present
+    if (!hasAdult) {
+        e.preventDefault();
+        alert('At least one adult (12+ years) must be included in the booking.');
+        console.log('Form submission prevented: No adult traveler');
+        return;
+    }
+    
+    // Check total price
+    const totalPrice = parseFloat(document.getElementById('totalPriceInput').value);
+    if (isNaN(totalPrice) || totalPrice <= 0) {
+        e.preventDefault();
+        alert('Invalid total price. Please ensure all traveler information is complete.');
+        console.log(`Form submission prevented: Invalid total price: ${totalPrice}`);
+        return;
+    }
+    
+    if (!allCategoriesSet) {
+        e.preventDefault();
+        alert('Please ensure all traveler information is complete. Make sure to enter valid IC numbers.');
+        console.log('Form submission prevented: Missing traveler categories');
+        return;
+    }
+    
+    // Check if form can be submitted (at least one adult present)
+    if (!window.canSubmitForm) {
+        e.preventDefault();
+        alert('At least one adult (12+ years) must be included in the booking.');
+        console.log('Form submission prevented: No adult traveler');
+        return;
+    }
+    
+    console.log('Form validation passed, submitting form');
 });
 </script>
 @endsection

@@ -35,6 +35,7 @@ return new class extends Migration
 
         Schema::create('additional_activities', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('travel_package_id')->constrained('travel_packages')->onDelete('cascade');
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
@@ -49,10 +50,32 @@ return new class extends Migration
             $table->decimal('price_at_time_of_booking', 10, 2);
             $table->timestamps();
         });
+        
+        // For activity pricing tiers (per-head pricing)
+        Schema::create('activity_pricing_tiers', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('additional_activity_id')->constrained('additional_activities')->onDelete('cascade');
+            $table->enum('participant_type', ['adult', 'child', 'infant']);
+            $table->decimal('price', 10, 2);
+            $table->timestamps();
+        });
+        
+        // For custom itinerary days
+        Schema::create('private_booking_custom_days', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('private_booking_id')->constrained('private_bookings')->onDelete('cascade');
+            $table->integer('day_number');
+            $table->text('original_activities');
+            $table->text('custom_activities');
+            $table->decimal('additional_cost', 10, 2)->default(0);
+            $table->timestamps();
+        });
     }
 
     public function down()
     {
+        Schema::dropIfExists('private_booking_custom_days');
+        Schema::dropIfExists('activity_pricing_tiers');
         Schema::dropIfExists('private_booking_activities');
         Schema::dropIfExists('additional_activities');
         Schema::dropIfExists('private_booking_participants');

@@ -8,11 +8,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3">Customer Management</h1>
         <div class="d-flex gap-3">
-            <!-- Search Box -->
-            <form class="d-flex" action="{{ route('admin.customer.index') }}" method="GET">
-                <input type="text" name="search" class="form-control" placeholder="Search customers..." value="{{ request('search') }}">
-                <button class="btn btn-primary ms-2" type="submit">Search</button>
-            </form>
+           
         </div>
     </div>
 
@@ -96,10 +92,11 @@
                                 </td>
                                 <td>{{ $customer->created_at->format('d M Y') }}</td>
                                 <td>
-                                    <div class="btn-group">
+                                    <div class="d-flex gap-2">
                                         <a href="{{ route('admin.customer.edit', ['customer' => $customer->id]) }}" 
-                                           class="btn btn-sm btn-info">
-                                            <i class="fas fa-edit"> Edit</i>
+                                           class="btn d-flex align-items-center justify-content-center" 
+                                           style="background-color: #00c3ff; color: #fff; border: none; border-radius: 8px; width: 120px; padding: 8px 16px;">
+                                            <i class="fas fa-edit me-2"></i> Edit
                                         </a>
                                     </div>
                                 </td>

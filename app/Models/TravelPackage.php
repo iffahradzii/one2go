@@ -38,9 +38,18 @@ class TravelPackage extends Model
 
     public function bookings()
     {
-        return $this->hasMany(Booking::class, 'travel_package_id');
+        return $this->hasMany(Booking::class);
     }
 
+    // Add this method to your existing TravelPackage model
 
-    
+    public function additionalActivities()
+    {
+        return $this->hasMany(AdditionalActivity::class);
+    }
+
+    public function privateBookings()
+    {
+        return $this->hasMany(PrivateBooking::class);
+    }
 }

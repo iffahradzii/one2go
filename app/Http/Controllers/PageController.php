@@ -11,4 +11,13 @@ class PageController extends Controller
     {
         return view('about-us'); // Ensure the 'about_us.blade.php' file exists in your views folder
     }
+    
+    public function faqs()
+    {
+        $faqs = \App\Models\Faq::where('is_published', true)
+                   ->orderBy('display_order')
+                   ->get();
+                   
+        return view('customer.faqs.index', compact('faqs'));
+    }
 }

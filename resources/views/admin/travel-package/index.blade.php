@@ -6,33 +6,34 @@
 <div class="container-fluid py-4">
     <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3">Travel Package Management</h1>
-        <div class="d-flex gap-3">
-            <!-- Search Box -->
-            <form class="d-flex" action="{{ route('admin.travel-package.index') }}" method="GET">
-                <input type="text" name="search" class="form-control" placeholder="Search packages..." value="{{ request('search') }}">
-                <button class="btn btn-primary ms-2" type="submit">Search</button>
-            </form>
-            <!-- Filter Dropdown -->
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    {{ $selectedCountry ?? 'All Countries' }}
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{{ route('admin.travel-package.index') }}">All Countries</a></li>
-                    @foreach($countries as $country)
-                        <li>
-                            <a class="dropdown-item" href="{{ route('admin.travel-package.index', ['country' => $country]) }}">
-                                {{ $country }}
-                            </a>
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
-            <!-- Add Package Button -->
-            <a href="{{ route('admin.travel-package.create') }}" class="btn btn-primary">Add Package</a>
+    <h1 class="h3">Travel Package Management</h1>
+    <div class="d-flex gap-3 align-items-start flex-wrap">
+      
+
+        <!-- Filter Dropdown -->
+        <div class="dropdown">
+            <button class="btn btn-primary uniform-btn dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                {{ $selectedCountry ?? 'All Countries' }}
+           Filter </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ route('admin.travel-package.index') }}">All Countries</a></li>
+                @foreach($countries as $country)
+                    <li>
+                        <a class="dropdown-item" href="{{ route('admin.travel-package.index', ['country' => $country]) }}">
+                            {{ $country }}
+                        </a>
+                    </li>
+                @endforeach
+            </ul>
         </div>
+
+        <!-- Add Package Button -->
+        <a href="{{ route('admin.travel-package.create') }}" class="btn btn-primary uniform-btn">
+            <i class="fas fa-plus-circle me-1"></i> Add Package
+        </a>
     </div>
+</div>
+
 
     <!-- Statistics Cards -->
     <div class="row g-3 mb-4">
@@ -142,9 +143,11 @@
                                 </td>
                                 <td>
                                     <a href="{{ route('admin.travel-package.edit', ['travel_package' => $package->id]) }}" 
-                                       class="btn btn-sm btn-info">
-                                        <i class="fas fa-edit"></i> Edit
+                                       class="btn d-flex align-items-center justify-content-center" 
+                                       style="background-color: #00c3ff; color: #fff; border: none; border-radius: 8px; width: 120px; padding: 8px 16px;">
+                                        <i class="fas fa-edit me-2"></i> Edit
                                     </a>
+
                                 </td>
                             </tr>
                         @empty

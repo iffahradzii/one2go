@@ -20,41 +20,7 @@ One2GO
         </div>
     </section>
 
-    <!-- Social Proof Section -->
-    <section class="social-proof py-5" style="background-color: #f9f9f9;">
-        <div class="container text-center">
-            <div class="row justify-content-center">
-            <h2 class="fw-bold mb-5" style="color: #0047AB;">Trusted by Thousands of Travelers</h2>
 
-                <!-- Total Destinations -->
-                <div class="col-md-3 mb-4">
-                    <div class="counter-box p-4 shadow rounded" style="background-color: #FFFFFF;">
-                        <i class="fas fa-map-marked-alt fa-3x mb-3" style="color: #ffdd00;"></i>
-                        <h3 class="counter" data-target="50">0</h3>
-                        <p class="mb-0">Total Destinations</p>
-                    </div>
-                </div>
-
-                <!-- Happy Customers -->
-                <div class="col-md-3 mb-4">
-                    <div class="counter-box p-4 shadow rounded" style="background-color: #FFFFFF;">
-                        <i class="fas fa-smile-beam fa-3x mb-3" style="color: #ff4d4d;"></i>
-                        <h3 class="counter" data-target="10000">0</h3>
-                        <p class="mb-0">Happy Customers</p>
-                    </div>
-                </div>
-
-                <!-- Active Bookings -->
-                <div class="col-md-3 mb-4">
-                    <div class="counter-box p-4 shadow rounded" style="background-color: #FFFFFF;">
-                        <i class="fas fa-plane-departure fa-3x mb-3" style="color: #7ed957;"></i>
-                        <h3 class="counter" data-target="300">0</h3>
-                        <p class="mb-0">Active Bookings</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
 
 

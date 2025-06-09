@@ -39,25 +39,36 @@
 
     <div class="col-12">
       <div class="form-floating mb-3">
-        <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="email" placeholder="name@example.com" required>
+        <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" id="email" 
+               placeholder="name@example.com" required 
+               pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" 
+               title="Please enter a valid email address in the format: name@example.com">
         <label for="email" class="form-label">{{ __('Email Address') }}</label>
-        @error('email')
-          <span class="invalid-feedback" role="alert">
-            <strong>{{ $message }}</strong>
-          </span>
-        @enderror
+        <div class="invalid-feedback" id="emailFeedback">
+          @error('email')
+            {{ $message }}
+          @else
+            Please enter a valid email address in the format: name@example.com
+          @enderror
+        </div>
       </div>
     </div>
 
     <div class="col-12">
     <div class="form-floating mb-3">
-      <input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" id="phone" placeholder="Your Phone Number" required>
+      <input type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" id="phone" 
+             placeholder="Your Phone Number" required 
+             pattern="[0-9]{10}" 
+             title="Phone number must be exactly 10 digits and contain only numbers" 
+             maxlength="10">
       <label for="phone" class="form-label">{{ __('Phone Number') }}</label>
-      @error('phone')
-        <span class="invalid-feedback" role="alert">
-          <strong>{{ $message }}</strong>
-        </span>
-      @enderror
+      <div class="invalid-feedback" id="phoneFeedback">
+        @error('phone')
+          {{ $message }}
+        @else
+          Phone number must be exactly 10 digits and contain only numbers
+        @enderror
+      </div>
     </div>
   </div>
 
@@ -98,4 +109,35 @@
     </div>
   </div>
 </form>
+
+<script>
+  // Email validation
+  const emailInput = document.getElementById('email');
+  const emailFeedback = document.getElementById('emailFeedback');
+  
+  emailInput.addEventListener('input', function() {
+    const isValid = this.checkValidity();
+    if (!isValid) {
+      this.classList.add('is-invalid');
+    } else {
+      this.classList.remove('is-invalid');
+    }
+  });
+  
+  // Phone validation
+  const phoneInput = document.getElementById('phone');
+  const phoneFeedback = document.getElementById('phoneFeedback');
+  
+  phoneInput.addEventListener('input', function() {
+    // Remove any non-numeric characters
+    this.value = this.value.replace(/[^0-9]/g, '');
+    
+    const isValid = this.value.length === 10;
+    if (!isValid) {
+      this.classList.add('is-invalid');
+    } else {
+      this.classList.remove('is-invalid');
+    }
+  });
+</script>
 @endsection

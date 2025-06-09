@@ -42,6 +42,7 @@
             margin-right: 0;
         }
     </style>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     
@@ -79,7 +80,7 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/ratings-reviews') }}">Ratings & Review</a>
+                        <a class="nav-link" href="{{ route('customer.reviews.index') }}">Ratings & Review</a>
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="othersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -87,7 +88,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="othersDropdown">
                             <li><a class="dropdown-item" href="{{ route('about.us') }}">About Us</a></li>
-                            <li><a class="dropdown-item" href="{{ url('/faq') }}">FAQ</a></li>
+                            <li><a class="dropdown-item" href="{{ route('customer.faqs') }}">FAQ</a></li>
                         </ul>
                     </li>
 
@@ -145,3 +146,9 @@
 @stack('scripts')
 </body>
 </html>
+<!-- In the head section -->
+<link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- At the bottom of the file, before closing body tag -->
+@yield('scripts')

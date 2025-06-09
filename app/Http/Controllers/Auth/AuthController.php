@@ -42,15 +42,12 @@ class AuthController extends Controller
      */
     public function postLogin(Request $request)
     {
-        // Validate the credentials
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
-            // Redirect to the homepage after successful login
-            return redirect()->route('homepage');  // Ensure this route name is 'homepage'
+            return redirect()->route('homepage'); 
         }
 
-        // If login fails, return back with an error message
         return redirect()->route('login')->with('error', 'Invalid credentials.');
     }
       
@@ -158,28 +155,28 @@ class AuthController extends Controller
     }
 
     public function resetPassword(Request $request): RedirectResponse
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|min:6|confirmed',
-        'token' => 'required',
-    ]);
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6|confirmed',
+            'token' => 'required',
+        ]);
 
-    $status = Password::reset(
-        $request->only('email', 'password', 'password_confirmation', 'token'),
-        function (User $user, $password) {
-            $user->forceFill([
-                'password' => Hash::make($password),
-            ])->save();
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function (User $user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                ])->save();
+            }
+        );
+
+        if ($status == Password::PASSWORD_RESET) {
+            return redirect()->route('login')->with('status', 'Password reset successfully!');
         }
-    );
 
-    if ($status == Password::PASSWORD_RESET) {
-        return redirect()->route('login')->with('status', 'Password reset successfully!');
+        return back()->withErrors(['email' => 'Failed to reset password.']);
     }
-
-    return back()->withErrors(['email' => 'Failed to reset password.']);
-}
 
 
 }

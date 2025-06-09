@@ -202,13 +202,16 @@ Admin Edit
                 <div id="available-dates-container">
                     @php
                         $availableDates = is_string($package->available_dates) ? json_decode($package->available_dates, true) : $package->available_dates;
+                        $minDate = date('Y-m-d', strtotime('0 days'));
                     @endphp
-                    @foreach ($availableDates as $index => $date)
-                        <div class="input-group mb-2 date-item-{{ $index }}">
-                            <input type="date" name="available_dates[]" class="form-control" value="{{ $date }}">
-                            <button type="button" class="btn btn-danger delete-date">×</button>
-                        </div>
-                    @endforeach
+                    @if(count($availableDates) > 0)
+                        @foreach ($availableDates as $index => $date)
+                            <div class="input-group mb-2 date-item-{{ $index }}">
+                                <input type="date" name="available_dates[]" class="form-control" value="{{ $date }}" min="{{ date('Y-m-d', strtotime('+14 days')) }}">
+                                <button type="button" class="btn btn-danger delete-date" data-id="{{ $index }}">×</button>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
                 <button type="button" id="add-available-date" class="btn btn-outline-primary btn-sm mt-2">
                     <i class="fas fa-plus"></i> Add Available Date
@@ -225,139 +228,123 @@ Admin Edit
 @endsection
 
 @section('scripts')
-@include('partials.dynamic-fields-js')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Make duration field readonly
     const durationField = document.querySelector('input[name="duration"]');
     if (durationField) {
         durationField.setAttribute('readonly', true);
         durationField.classList.add('bg-light');
     }
-    
-    // Add delete functionality for include items
-    document.querySelectorAll('.delete-include').forEach((button, index) => {
-        button.addEventListener('click', function() {
-            if (confirm('Are you sure you want to delete this include item?')) {
-                deleteItem('include', {{ $package->id }}, index);
-            }
-        });
-    });
-    
-    // Add delete functionality for exclude items
-    document.querySelectorAll('.delete-exclude').forEach((button, index) => {
-        button.addEventListener('click', function() {
-            if (confirm('Are you sure you want to delete this exclude item?')) {
-                deleteItem('exclude', {{ $package->id }}, index);
-            }
-        });
-    });
-    
-    // Add delete functionality for available dates
-    document.querySelectorAll('.delete-date').forEach((button, index) => {
-        button.addEventListener('click', function() {
-            if (confirm('Are you sure you want to delete this date?')) {
-                deleteItem('date', {{ $package->id }}, index);
-            }
-        });
-    });
-    
-    // Function to handle deletion via AJAX
-    function deleteItem(type, packageId, index) {
-        fetch(`/admin/travel-package/${packageId}/${type}/${index}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Remove the element from the DOM
-                const container = document.querySelector(`.${type}-item-${index}`);
-                if (container) {
-                    container.remove();
-                }
-            } else {
-                alert('Failed to delete item');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while deleting the item');
-        });
-    }
-    
+
     // Prevent adding new itinerary items
     const addItineraryBtn = document.getElementById('add-itinerary');
     if (addItineraryBtn) {
         addItineraryBtn.style.display = 'none';
     }
     
-    // Add include item
-    document.getElementById('add-include').addEventListener('click', function() {
-        const container = document.getElementById('include-container');
-        container.insertAdjacentHTML('beforeend', `
-            <div class="input-group mb-2">
-                <textarea name="include[]" class="form-control" rows="2" placeholder="Enter what's included"></textarea>
-                <button type="button" class="btn btn-danger delete-include">×</button>
-            </div>
-        `);
-    });
-    
-    // Add exclude item
-    document.getElementById('add-exclude').addEventListener('click', function() {
-        const container = document.getElementById('exclude-container');
-        container.insertAdjacentHTML('beforeend', `
-            <div class="input-group mb-2">
-                <textarea name="exclude[]" class="form-control" rows="2" placeholder="Enter what's excluded"></textarea>
-                <button type="button" class="btn btn-danger delete-exclude">×</button>
-            </div>
-        `);
-    });
-    
-    // Add activity
-    document.getElementById('add-activity').addEventListener('click', function() {
-        const container = document.getElementById('activities-container');
-        container.insertAdjacentHTML('beforeend', `
-            <div class="activity-item mb-3">
-                <div class="row">
-                    <div class="col-md-6">
-                        <input type="text" name="activities[]" class="form-control" placeholder="Activity Name">
-                    </div>
-                    <div class="col-md-5">
-                        <div class="input-group">
-                            <span class="input-group-text">RM</span>
-                            <input type="number" name="activity_prices[]" class="form-control" step="0.01" placeholder="Price per person">
+    // Add activity - using one-time event listener to prevent duplicates
+    const addActivityBtn = document.getElementById('add-activity');
+    if (addActivityBtn && !addActivityBtn.hasAttribute('data-initialized')) {
+        addActivityBtn.setAttribute('data-initialized', 'true');
+        addActivityBtn.addEventListener('click', function() {
+            const container = document.getElementById('activities-container');
+            container.insertAdjacentHTML('beforeend', `
+                <div class="activity-item mb-3">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <input type="text" name="activities[]" class="form-control" placeholder="Activity Name">
+                        </div>
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="input-group-text">RM</span>
+                                <input type="number" name="activity_prices[]" class="form-control" step="0.01" placeholder="Price per person">
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-danger remove-activity">×</button>
                         </div>
                     </div>
-                    <div class="col-md-1">
-                        <button type="button" class="btn btn-danger remove-activity">×</button>
-                    </div>
                 </div>
-            </div>
-        `);
-    });
+            `);
+        });
+    }
+
+    // Add Include Item - using one-time event listener
+    const includeBtn = document.getElementById('add-include');
+    if (includeBtn && !includeBtn.hasAttribute('data-initialized')) {
+        includeBtn.setAttribute('data-initialized', 'true');
+        includeBtn.addEventListener('click', function () {
+            const container = document.getElementById('include-container');
+            container.insertAdjacentHTML('beforeend', `
+                <div class="input-group mb-2">
+                    <textarea name="include[]" class="form-control" rows="2" placeholder="Enter what's included"></textarea>
+                    <button type="button" class="btn btn-danger delete-include">×</button>
+                </div>
+            `);
+        });
+    }
+
+    // Add Exclude Item - using one-time event listener
+    const excludeBtn = document.getElementById('add-exclude');
+    if (excludeBtn && !excludeBtn.hasAttribute('data-initialized')) {
+        excludeBtn.setAttribute('data-initialized', 'true');
+        excludeBtn.addEventListener('click', function () {
+            const container = document.getElementById('exclude-container');
+            container.insertAdjacentHTML('beforeend', `
+                <div class="input-group mb-2">
+                    <textarea name="exclude[]" class="form-control" rows="2" placeholder="Enter what's excluded"></textarea>
+                    <button type="button" class="btn btn-danger delete-exclude">×</button>
+                </div>
+            `);
+        });
+    }
     
-    // Add available date
-    document.getElementById('add-available-date').addEventListener('click', function() {
-        const container = document.getElementById('available-dates-container');
-        container.insertAdjacentHTML('beforeend', `
-            <div class="input-group mb-2">
-                <input type="date" name="available_dates[]" class="form-control">
-                <button type="button" class="btn btn-danger delete-date">×</button>
-            </div>
-        `);
-    });
-    
-    // Remove activity
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-activity')) {
-            e.target.closest('.activity-item').remove();
-        }
-    });
+    // Add Available Date - using one-time event listener
+    const addDateBtn = document.getElementById('add-available-date');
+    if (addDateBtn && !addDateBtn.hasAttribute('data-initialized')) {
+        addDateBtn.setAttribute('data-initialized', 'true');
+        addDateBtn.addEventListener('click', function () {
+            const minDate = new Date();
+            minDate.setDate(minDate.getDate() + 14); // Add 14 days to current date
+            const minDateStr = minDate.toISOString().split('T')[0];
+            
+            const container = document.getElementById('available-dates-container');
+            container.insertAdjacentHTML('beforeend', `
+                <div class="input-group mb-2">
+                    <input type="date" name="available_dates[]" class="form-control" min="${minDateStr}">
+                    <button type="button" class="btn btn-danger delete-date">×</button>
+                </div>
+            `);
+        });
+    }
+
+    // Delegated Delete Handlers - only set up once
+    if (!document.body.hasAttribute('data-delete-handlers-initialized')) {
+        document.body.setAttribute('data-delete-handlers-initialized', 'true');
+        document.body.addEventListener('click', function (e) {
+            if (e.target.classList.contains('delete-include') || e.target.classList.contains('delete-include-new')) {
+                e.preventDefault();
+                e.target.closest('.input-group').remove();
+            }
+
+            if (e.target.classList.contains('delete-exclude') || e.target.classList.contains('delete-exclude-new')) {
+                e.preventDefault();
+                e.target.closest('.input-group').remove();
+            }
+
+            if (e.target.classList.contains('delete-date') || e.target.classList.contains('delete-date-new')) {
+                e.preventDefault();
+                e.target.closest('.input-group').remove();
+            }
+
+            if (e.target.classList.contains('remove-activity')) {
+                e.preventDefault();
+                e.target.closest('.activity-item').remove();
+            }
+        });
+    }
 });
 </script>
+@include('partials.dynamic-fields-js')
 @endsection
