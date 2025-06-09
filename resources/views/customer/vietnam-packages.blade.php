@@ -37,7 +37,7 @@ Vietnam
             <div class="col-md-4 d-flex">
                 <div class="card shadow-sm w-100">
                     <div class="card-img-container" style="height: 200px; overflow: hidden; display: flex; justify-content: center; align-items: center; background-color: #f8f9fa;">
-                        <img src="{{ asset('storage/app/public/' . $package->image) }}" class="card-img-top" alt="{{ $package->name }}" style="max-height: 100%; max-width: 100%; object-fit: cover;">
+                        <img src="{{ asset('storage/' . $package->image) }}" class="card-img-top" alt="{{ $package->name }}" style="max-height: 100%; max-width: 100%; object-fit: cover;">
                     </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title text-center">{{ $package->name }}</h5>
