@@ -81,7 +81,7 @@
                             @if($review->photo_path)
                                 <div class="mb-3">
                                     <h6>Photo:</h6>
-                                    <img src="{{ asset($review->photo_path) }}" alt="Review Photo" class="img-fluid rounded" style="max-height: 300px;">
+                                    <img src="{{ asset('storage/' . $review->photo_path) }}" alt="Review Photo" class="img-fluid rounded" style="max-height: 300px;">
                                 </div>
                             @endif
                         </div>

@@ -65,7 +65,7 @@ Admin Edit
                     <input type="file" name="image" class="form-control">
                     <div class="mt-2">
                         <p>Current Image:</p>
-                        <img src="{{ asset($package->image) }}" class="img-thumbnail" style="max-width: 200px;">
+                        <img src="{{ asset('storage/' . $package->image) }}" class="img-thumbnail" style="max-width: 200px;">
                     </div>
                 </div>
             </div>
