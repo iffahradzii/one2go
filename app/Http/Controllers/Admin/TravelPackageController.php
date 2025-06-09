@@ -358,7 +358,7 @@ class TravelPackageController extends Controller
         ->get();
         
         // Return the view with the fetched packages
-        return view('customer.southkorea-packages', compact('packages'));
+        return view('customer.southKorea-packages', compact('packages'));
     }
 
 
