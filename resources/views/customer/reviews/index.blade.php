@@ -78,7 +78,7 @@
                                 
                                 <div class="col-md-4 d-flex align-items-center justify-content-center p-0">
                                     @if($review->photo_path)
-                                        <img src="{{ asset('$review->photo_path) }}" alt="Review Photo" class="img-fluid h-100 w-100" style="object-fit: cover;">
+                                        <img src="{{ asset($review->photo_path) }}" alt="Review Photo" class="img-fluid h-100 w-100" style="object-fit: cover;">
                                     @else
                                         <div class="d-flex align-items-center justify-content-center h-100 w-100 bg-light">
                                             <i class="fas fa-mountain fa-3x text-muted"></i>
@@ -165,7 +165,7 @@
                                 
                                 <div class="col-md-4 d-flex align-items-center justify-content-center p-0">
                                     @if($review->photo_path)
-                                        <img src="{{ asset('$review->photo_path) }}" alt="Review Photo" class="img-fluid h-100 w-100" style="object-fit: cover;">
+                                        <img src="{{ asset($review->photo_path) }}" alt="Review Photo" class="img-fluid h-100 w-100" style="object-fit: cover;">
                                     @else
                                         <div class="d-flex align-items-center justify-content-center h-100 w-100 bg-light">
                                             <i class="fas fa-mountain fa-3x text-muted"></i>
