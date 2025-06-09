@@ -71,7 +71,7 @@
                                     </div>
                                     <div class="mt-2">
                                         <p class="mb-1">Current photo:</p>
-                                        <img src="{{ asset('storage/' . $review->photo_path) }}" alt="Current Review Photo" class="img-thumbnail" style="max-height: 150px;">
+                                        <img src="{{ asset($review->photo_path) }}" alt="Current Review Photo" class="img-thumbnail" style="max-height: 150px;">
                                     </div>
                                 </div>
                             @endif
