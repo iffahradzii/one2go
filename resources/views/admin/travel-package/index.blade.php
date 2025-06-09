@@ -120,7 +120,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>
                                     @if($package->image)
-                                        <img src="{{ asset('storage/' . $package->image) }}" 
+                                        <img src="{{ asset($package->image) }}" 
                                              alt="{{ $package->name }}" 
                                              width="50" 
                                              height="50" 
