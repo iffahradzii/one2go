@@ -25,7 +25,7 @@ class TravelPackageController extends Controller
         $packages = $query->get();
 
         // Pass variables to the view
-        return view('admin\travel-package\index', compact('packages', 'countries', 'selectedCountry'));
+        return view('admin.travel-package.index', compact('packages', 'countries', 'selectedCountry'));
     }
 
     public function create()
