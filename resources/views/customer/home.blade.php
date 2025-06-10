@@ -152,7 +152,6 @@ One2GO
    
 </style>
 
-!-- Include Bootstrap JS and Optional Counter Script -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const counters = document.querySelectorAll(".counter");
