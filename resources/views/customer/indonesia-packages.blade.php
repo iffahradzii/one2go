@@ -1,13 +1,13 @@
 @extends("layout.layout")
 @section("title")
-Indonesia
+Thailand
 @endsection
 
 @section('content')
 <div class="container-fluid p-0">
-    <!-- Header Section for Indonesia -->
+    <!-- Header Section -->
     <div class="header-section" 
-         style="background-image: url('{{ asset('images/indonesia.jpg') }}'); 
+         style="background-image: url('{{ asset('images/thailand.jpg') }}'); 
                 background-size: cover; 
                 background-position: center; 
                 height: 300px; 
@@ -24,10 +24,11 @@ Indonesia
         <!-- Content -->
         <div class="text-center py-4 px-3 rounded" style="z-index: 2;">
             <h1 class="display-4 fw-bold">Explore Indonesia</h1>
-            <p class="lead">Discover the beauty of Indonesia with our curated travel packages. From pristine beaches to rich cultural heritage, experience it all with us at affordable prices.</p>
+            <p class="lead">Discover the Land of Smiles with our specially curated travel packages. Experience vibrant culture, breathtaking beaches, and tantalizing cuisine at affordable prices.</p>
         </div>
     </div>
 </div>
+
 
 <div class="container py-4">
     <h2 class="text-center mb-5">Indonesia Travel Packages</h2>
@@ -44,7 +45,7 @@ Indonesia
                         <div class="mt-auto">
                             <a href="{{ route('package.details', ['country' => strtolower($package->country), 'id' => $package->id]) }}" 
                                class="btn btn-outline-primary w-100 mb-2">View Details</a>
-                            
+                           
                         </div>
                     </div>
                 </div>
