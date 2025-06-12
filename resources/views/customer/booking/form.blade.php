@@ -171,7 +171,6 @@ function addTraveler() {
                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                            onchange="updateTravelerAge(${travelerId}, this.value)"
                            required>
-                    <small class="form-text text-muted">Format: 000000-00-0000</small>
                 </div>
                 
                 <div class="col-md-6">
