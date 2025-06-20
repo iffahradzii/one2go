@@ -66,4 +66,18 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Review::class);
     }
+
+    public function sendEmailVerificationNotification()
+    {
+        $url = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes(60),
+            [
+                'id' => $this->getKey(),
+                'hash' => sha1($this->getEmailForVerification()),
+            ]
+        );
+        \Log::info('Verification link generated', ['url' => $url]);
+        parent::sendEmailVerificationNotification();
+    }
 }
