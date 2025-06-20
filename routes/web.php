@@ -6,7 +6,6 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\TravelPackageController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PageController;
@@ -42,13 +41,6 @@ Route::get('/email/verify', function () {
 })->middleware('auth')->name('verification.notice');
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    \Log::info('Verifying email', [
-        'authenticated_user' => auth()->user(),
-        'route_id' => $request->route('id'),
-        'route_hash' => $request->route('hash'),
-        'full_url' => $request->fullUrl(),
-        'session' => session()->all(),
-    ]);
     $request->fulfill();
     
     // Explicitly update the email_verified_at timestamp
