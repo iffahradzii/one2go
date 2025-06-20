@@ -41,6 +41,14 @@ Route::get('/email/verify', function () {
 })->middleware('auth')->name('verification.notice');
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    \Log::info('Request info', [
+        'url' => url()->current(),
+        'scheme' => request()->getScheme(),
+        'isSecure' => request()->isSecure(),
+        'app_url' => config('app.url'),
+        'headers' => request()->headers->all(),
+    ]);
+    
     $request->fulfill();
     
     // Explicitly update the email_verified_at timestamp
