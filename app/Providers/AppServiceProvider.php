@@ -19,9 +19,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \Log::info('APP_URL: '.config('app.url'));
-        \Log::info('Request scheme: '.request()->getScheme());
-        \Log::info('Is secure: '.(request()->isSecure() ? 'yes' : 'no'));
         if (app()->environment('production')) {
             URL::forceRootUrl(config('app.url'));
             URL::forceScheme('https');
