@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AdminAuthController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Admin\TravelPackageController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PageController;
