@@ -76,7 +76,10 @@ Package Details
                             $itinerary = is_string($package->itinerary) ? json_decode($package->itinerary, true) : $package->itinerary;
                         @endphp
                         @foreach ($itinerary as $day => $activities)
-                            <li><strong>{{ ucfirst($day+1) }}:</strong> {{ Str::limit($activities, 100) }}</li>
+                            <li>
+                                <strong>Day {{ $day+1 }}:</strong>
+                                <div>{!! nl2br(e($activities)) !!}</div>
+                            </li>
                         @endforeach
                     </ul>
 
