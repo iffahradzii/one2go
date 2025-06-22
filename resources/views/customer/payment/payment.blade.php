@@ -118,18 +118,16 @@
                                                      class="accordion-collapse collapse {{ $dayIndex === 0 ? 'show' : '' }}" 
                                                      aria-labelledby="heading{{ $dayIndex }}" 
                                                      data-bs-parent="#itineraryAccordion">
-                                                    <div class="accordion-body">
+                                                   <div class="accordion-body">
                                                         @if(is_array($dayActivities))
-                                                            <div class="timeline">
-                                                                @foreach($dayActivities as $time => $activity)
-                                                                    <div class="timeline-item">
-                                                                        <div class="timeline-time">{{ $time }}</div>
-                                                                        <div class="timeline-content">{{ $activity }}</div>
-                                                                    </div>
-                                                                @endforeach
-                                                            </div>
+                                                            @foreach($dayActivities as $time => $activity)
+                                                                <p class="mb-1">
+                                                                    <strong>{{ $time }}</strong> – {{ $activity }}
+                                                                </p>
+                                                            @endforeach
                                                         @else
-                                                            <p>{{ $dayActivities }}</p>
+                                                            {{-- In case it's still a string --}}
+                                                            <p>{!! nl2br(e($dayActivities)) !!}</p>
                                                         @endif
                                                     </div>
                                                 </div>
