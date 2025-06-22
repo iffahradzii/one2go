@@ -149,13 +149,12 @@
                                             <button type="button" 
                                                     class="btn btn-sm btn-success" 
                                                     data-bs-toggle="modal" 
-                                                    data-bs-target="#updateStatus{{ $booking->id }}"
+                                                    data-bs-target="#updatePrivateStatus{{ $booking->id }}"
                                                     title="Update Status">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                        @elseif($isComplete)
-                                            
                                         @endif
+                                        
                                     </div>
                                 </td>
                             </tr>
