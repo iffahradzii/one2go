@@ -55,13 +55,14 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+      
+          <div class="col-md-3">
             <div class="card bg-success text-white h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="card-title mb-1">Completed Bookings</h6>
-                            <h2 class="mb-0">{{ $paidBookings }}</h2>
+                            <h6 class="card-title mb-1">Booked Bookings</h6>
+                            <h2 class="mb-0">{{ $completedBookings }}</h2>
                         </div>
                         <i class="fas fa-check-circle fa-2x opacity-50"></i>
                     </div>
@@ -126,7 +127,8 @@
                                 <td>RM {{ number_format($booking->total_price, 2) }}</td>
                                 <td>
                                     <span class="badge rounded-pill 
-                                        @if($booking->payment_status == 'paid') bg-success
+                                        @if($booking->payment_status == 'complete') bg-success
+                                        @elseif($booking->payment_status == 'paid') bg-success
                                         @elseif($booking->payment_status == 'pending') bg-warning
                                         @else bg-danger @endif">
                                         {{ ucfirst($booking->payment_status) }}
@@ -141,15 +143,22 @@
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         
-                                        @if($booking->payment_status != 'cancelled')
-                                        <button type="button" 
-                                                class="btn btn-sm btn-success" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#updateStatus{{ $booking->id }}"
-                                                title="Update Status">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
+                                        @php
+                                            $isComplete = $booking->payment_status === 'complete';
+                                        @endphp
+
+                                        @if(!$isComplete && $booking->payment_status != 'cancelled')
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-success" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#updateStatus{{ $booking->id }}"
+                                                    title="Update Status">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        @elseif($isComplete)
+                                            
                                         @endif
+
                                         
                                     </div>
                                 </td>
