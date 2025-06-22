@@ -12,6 +12,7 @@ class BookingController extends Controller
     
     public function index(Request $request)
     {
+        $this->updateCompletedBookings();
         // Get the booking type from request
         $bookingType = $request->input('type', 'general');
         
@@ -66,6 +67,17 @@ class BookingController extends Controller
                                    ->whereColumn('booking_id', 'bookings.id')
                                    ->groupBy('booking_id');
                       });
+                      
+            })->count();
+
+            $completedBookings = Booking::whereHas('payments', function($query) {
+                $query->where('payment_status', 'complete')
+                    ->whereIn('id', function($subQuery) {
+                        $subQuery->selectRaw('MAX(id)')
+                                ->from('payments')
+                                ->whereColumn('booking_id', 'bookings.id')
+                                ->groupBy('booking_id');
+                    });
             })->count();
             
             $cancelledBookings = Booking::whereHas('payments', function($query) {
@@ -84,7 +96,8 @@ class BookingController extends Controller
                 'pendingBookings', 
                 'paidBookings', 
                 'cancelledBookings',
-                'bookingType'
+                'bookingType',
+                'completedBookings'
             ));
         } else {
             // Redirect to the private booking controller for private bookings
@@ -150,4 +163,20 @@ class BookingController extends Controller
     
         return redirect()->back()->with('success', 'Booking status updated successfully');
     }
+
+    private function updateCompletedBookings()
+    {
+        $bookingsToComplete = Booking::whereHas('latestPayment', function($query) {
+            $query->where('payment_status', 'paid');
+        })->where('available_date', '<', now())->get();
+
+        foreach ($bookingsToComplete as $booking) {
+            $booking->latestPayment()->update([
+                'payment_status' => 'complete',
+                'notes' => 'Automatically marked as complete after travel date passed',
+                'payment_method' => 'system'
+            ]);
+        }
+    }
+
 }
