@@ -61,7 +61,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="card-title mb-1">Booked Bookings</h6>
+                            <h6 class="card-title mb-1">Complete Bookings</h6>
                             <h2 class="mb-0">{{ $completedBookings }}</h2>
                         </div>
                         <i class="fas fa-check-circle fa-2x opacity-50"></i>
