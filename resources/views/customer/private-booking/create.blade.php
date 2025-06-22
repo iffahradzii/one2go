@@ -182,7 +182,7 @@
                                         @foreach($packageItinerary as $dayIndex => $dayActivities)
                                             <div class="day-item mb-4 border-bottom pb-3">
                                                 <h6 class="fw-bold">Day {{ $dayIndex + 1 }}</h6>
-                                                <div class="mb-3">
+                                                <div class="itinerary-container mb-3" style="max-height: 150px; overflow-y: auto; padding-right: 5px;">
                                                     @if(is_array($dayActivities))
                                                         @foreach($dayActivities as $time => $activity)
                                                             <div class="d-flex mb-2">
@@ -191,7 +191,12 @@
                                                             </div>
                                                         @endforeach
                                                     @else
-                                                        <div>{{ $dayActivities }}</div>
+                                                        @php
+                                                            $lines = explode("\n", $dayActivities);
+                                                        @endphp
+                                                        @foreach($lines as $line)
+                                                            <div class="mb-2">{{ $line }}</div>
+                                                        @endforeach
                                                     @endif
                                                 </div>
                                                 
@@ -200,8 +205,12 @@
                                                     <label class="form-label">Customize Day {{ $dayIndex + 1 }} (Optional)</label>
                                                     <textarea class="form-control"
                                                               name="custom_days[{{ $dayIndex }}][custom_activities]"
-                                                              rows="3"
-                                                              placeholder="Describe your preferred activities for Day {{ $dayIndex + 1 }}..."></textarea>
+                                                              rows="5"
+                                                              placeholder="Describe your preferred activities for Day {{ $dayIndex + 1 }}...">
+@if(is_array($dayActivities))
+@foreach($dayActivities as $time => $activity){{ $time }} - {{ $activity }}
+@endforeach
+@else{{ $dayActivities }}@endif</textarea>
                                                     <input type="hidden" name="custom_days[{{ $dayIndex }}][day_number]" value="{{ $dayIndex + 1 }}">
                                                 </div>
                                             </div>
@@ -356,6 +365,7 @@ document.addEventListener('DOMContentLoaded', function() {
                            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                            onchange="updateTravelerAge(${participantId}, this.value)"
                            required>
+                    <small class="form-text text-muted">Format: 000000-00-0000</small>
                 </div>
 
 
