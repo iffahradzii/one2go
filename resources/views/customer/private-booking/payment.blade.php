@@ -166,8 +166,7 @@
                                                             <div class="timeline">
                                                                 @foreach($customActivities as $time => $activity)
                                                                     <div class="timeline-item">
-                                                                        <!-- Only display the activity content, not the label/time -->
-                                                                        <div class="timeline-content">{{ $activity }}</div>
+                                                                     <div class="timeline-content">{{ $time }}{{ $activity }}</div>
                                                                     </div>
                                                                 @endforeach
                                                             </div>
