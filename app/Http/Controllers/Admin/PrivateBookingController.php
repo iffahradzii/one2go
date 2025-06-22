@@ -11,6 +11,8 @@ class PrivateBookingController extends Controller
 {
     public function index(Request $request)
     {
+        $this->updateCompletedPrivateBookings();
+
         $search = $request->input('search');
         $status = $request->input('status');
         
@@ -69,6 +71,16 @@ class PrivateBookingController extends Controller
                   });
         })->count();
 
+        $completedBookings = PrivateBooking::whereHas('payments', function($query) {
+                    $query->where('payment_status', 'complete')
+                        ->whereIn('id', function($subQuery) {
+                            $subQuery->selectRaw('MAX(id)')
+                                    ->from('payments')
+                                    ->whereColumn('private_booking_id', 'private_bookings.id')
+                                    ->groupBy('private_booking_id');
+                        });
+                })->count();
+
            
         $cancelledBookings = PrivateBooking::whereHas('payments', function($query) {
             $query->where('payment_status', 'cancelled')
@@ -85,7 +97,8 @@ class PrivateBookingController extends Controller
             'totalBookings', 
             'pendingBookings', 
             'paidBookings', 
-            'cancelledBookings'
+            'cancelledBookings',
+            'completedBookings'
         ));
     }
     
@@ -130,4 +143,19 @@ class PrivateBookingController extends Controller
         
         return redirect()->route('admin.private-booking.index')->with('success', 'Booking deleted successfully');
     }
+    private function updateCompletedPrivateBookings()
+{
+    $bookingsToComplete = PrivateBooking::whereHas('latestPayment', function($query) {
+        $query->where('payment_status', 'paid');
+    })->where('available_date', '<', now())->get();
+
+    foreach ($bookingsToComplete as $booking) {
+        $booking->latestPayment()->update([
+            'payment_status' => 'complete',
+            'notes' => 'Automatically marked as complete after travel date passed',
+            'payment_method' => 'system'
+        ]);
+    }
+}
+
 }
