@@ -71,17 +71,19 @@ Package Details
                 <div class="card bg-light p-3 mb-4">
                     <!-- Itinerary Preview -->
                     <h6 class="mb-2">Daily Activities:</h6>
-                    <ul class="mb-3">
-                        @php
-                            $itinerary = is_string($package->itinerary) ? json_decode($package->itinerary, true) : $package->itinerary;
-                        @endphp
-                        @foreach ($itinerary as $day => $activities)
-                            <li>
-                                <strong>Day {{ $day+1 }}:</strong>
-                                <div>{!! nl2br(e($activities)) !!}</div>
-                            </li>
-                        @endforeach
-                    </ul>
+                    <div class="itinerary-container" style="max-height: 250px; overflow-y: auto; padding-right: 5px;">
+                        <ul class="mb-3">
+                            @php
+                                $itinerary = is_string($package->itinerary) ? json_decode($package->itinerary, true) : $package->itinerary;
+                            @endphp
+                            @foreach ($itinerary as $day => $activities)
+                                <li>
+                                    <strong>Day {{ $day+1 }}:</strong>
+                                    <div>{!! nl2br(e($activities)) !!}</div>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </div>
 
                     <!-- Inclusions -->
                     <h6 class="mb-2">What's Included:</h6>
