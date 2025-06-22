@@ -98,10 +98,10 @@
                         <table class="table table-bordered">
                             <thead class="bg-light">
                                 <tr>
-                                    <th width="50">#</th>
-                                    <th>Name</th>
-                                    <th>IC Number</th>
-                                    <th>Type</th>
+                                    <th width="50" style="color: white">#</th>
+                                    <th style="color: white">Name</th>
+                                    <th style="color: white">IC Number</th>
+                                    <th style="color: white">Type</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -142,8 +142,8 @@
                                 <table class="table table-bordered">
                                     <thead class="bg-light">
                                         <tr>
-                                            <th width="150">Day</th>
-                                            <th>Activities</th>
+                                            <th width="150" style="color: white">Day</th>
+                                            <th style="color: white">Activities</th>
                                         </tr>
                                     </thead>
                                     <tbody>
