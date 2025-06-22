@@ -141,7 +141,19 @@
                                         @foreach($itineraryData as $index => $dayContent)
                                             <tr>
                                                 <td class="fw-bold">Day {{ $index + 1 }}</td>
-                                                <td>{{ $dayContent }}</td>
+                                                <td>
+                                                    @if (is_array($dayContent))
+                                                    {{-- Day stored as an array: [ "08:00" => "Meet …", "11:00" => "Flight …" ] --}}
+                                                    @foreach ($dayContent as $time => $activity)
+                                                        <div>
+                                                            <strong>{{ $time }}</strong> — {{ $activity }}
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    {{-- Day stored as a plain string with \n line breaks --}}
+                                                    {!! nl2br(e($dayContent)) !!}
+                                                @endif
+                                                </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
