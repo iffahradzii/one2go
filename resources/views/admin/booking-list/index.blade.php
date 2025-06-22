@@ -155,8 +155,6 @@
                                                     title="Update Status">
                                                 <i class="fas fa-edit"></i>
                                             </button>
-                                        @elseif($isComplete)
-                                            
                                         @endif
 
                                         
