@@ -37,8 +37,8 @@
                     <button class="nav-link" id="done-tab" data-bs-toggle="tab" data-bs-target="#done" type="button" role="tab">
                         <i class="fas fa-flag-checkered me-2"></i>Done 
                         <span class="badge rounded-pill bg-secondary ms-2">
-                            {{ $bookings->where('payment_status', 'paid')->where('available_date', '<', now()->toDateString())->count() + 
-                               (isset($privateBookings) ? $privateBookings->where('payment_status', 'paid')->where('available_date', '<', now()->toDateString())->count() : 0) }}
+                            {{ $bookings->where('payment_status', 'complete')->count() + 
+                               (isset($privateBookings) ? $privateBookings->where('payment_status', 'complete')->count() : 0) }}
                         </span>
                     </button>
                 </li>
@@ -209,8 +209,8 @@
 
                 <!-- Done Tab -->
                 <div class="tab-pane fade" id="done" role="tabpanel" aria-labelledby="done-tab">
-                    @if(($bookings->where('payment_status', 'paid')->where('available_date', '<', now()->toDateString())->isEmpty()) && 
-                        (empty($privateBookings) || $privateBookings->where('payment_status', 'paid')->where('available_date', '<', now()->toDateString())->isEmpty()))
+                    @if(($bookings->where('payment_status', 'complete')->isEmpty()) && 
+                        (empty($privateBookings) || $privateBookings->where('payment_status', 'complete')->isEmpty()))
                         <div class="text-center py-5">
                             <i class="fas fa-flag-checkered fa-3x text-muted mb-3"></i>
                             <p class="text-muted">No completed trips yet.</p>
@@ -218,7 +218,7 @@
                     @else
                         <div class="row g-4">
                             <!-- Regular bookings -->
-                            @foreach($bookings->where('payment_status', 'paid')->where('available_date', '<', now()->toDateString()) as $booking)
+                            @foreach($bookings->where('payment_status', 'complete') as $booking)
                                 <div class="col-md-6 col-lg-4">
                                     <div class="card h-100 border-secondary hover-shadow transition">
                                         <div class="card-body">
@@ -263,7 +263,7 @@
                             
                             <!-- Private bookings -->
                             @if(isset($privateBookings))
-                                @foreach($privateBookings->where('payment_status', 'paid')->where('available_date', '<', now()->toDateString()) as $booking)
+                                @foreach($privateBookings->where('payment_status', 'complete') as $booking)
                                     <div class="col-md-6 col-lg-4">
                                         <div class="card h-100 border-secondary hover-shadow transition">
                                             <div class="card-body">
