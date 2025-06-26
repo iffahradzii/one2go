@@ -37,7 +37,7 @@ Admin Edit
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="price" class="form-label">Price (RM)</label>
-                        <input type="number" name="price" step="0.01" class="form-control" value="{{ $package->price }}" required>
+                        <input type="number" name="price" step="0.01" min="0" class="form-control" value="{{ $package->price }}" oninput="this.value = this.value < 0 ? 0 : this.value" required>
                     </div>
                     
                     <div class="col-md-6 mb-3">
@@ -230,6 +230,17 @@ Admin Edit
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // Add validation for base price
+    const basePrice = document.querySelector('input[name="price"]');
+    if (basePrice) {
+        basePrice.setAttribute('min', '0');
+        basePrice.addEventListener('input', function() {
+            if (this.value < 0) {
+                this.value = 0;
+            }
+        });
+    }
+
     // Make duration field readonly
     const durationField = document.querySelector('input[name="duration"]');
     if (durationField) {
@@ -258,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <div class="col-md-5">
                             <div class="input-group">
                                 <span class="input-group-text">RM</span>
-                                <input type="number" name="activity_prices[]" class="form-control" step="0.01" placeholder="Price per person">
+                                <input type="number" name="activity_prices[]" class="form-control" step="0.01" min="0" placeholder="Price per person" oninput="this.value = this.value < 0 ? 0 : this.value">
                             </div>
                         </div>
                         <div class="col-md-1">
@@ -269,6 +280,16 @@ document.addEventListener('DOMContentLoaded', function () {
             `);
         });
     }
+
+    // Add validation for existing activity price inputs
+    document.querySelectorAll('input[name="activity_prices[]"]').forEach(input => {
+        input.setAttribute('min', '0');
+        input.addEventListener('input', function() {
+            if (this.value < 0) {
+                this.value = 0;
+            }
+        });
+    });
 
     // Add Include Item - using one-time event listener
     const includeBtn = document.getElementById('add-include');
