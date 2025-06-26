@@ -41,7 +41,7 @@
                     <div class="col-md-4">
                         <div class="form-group mb-3">
                             <label for="price">Base Price</label>
-                            <input type="number" name="price" step="0.01" class="form-control" value="{{ old('price') }}" required>
+                            <input type="number" name="price" step="0.01" min="0" class="form-control" value="{{ old('price') }}" oninput="this.value = this.value < 0 ? 0 : this.value" required>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -104,7 +104,7 @@
                             <div class="col-md-6">
                                 <div class="input-group">
                                     <span class="input-group-text">RM</span>
-                                    <input type="number" name="activity_prices[]" class="form-control" step="0.01" placeholder="Price per person" value="{{ old('activity_prices.0') }}">
+                                    <input type="number" name="activity_prices[]" class="form-control" step="0.01" min="0" placeholder="Price per person" value="{{ old('activity_prices.0') }}">
                                 </div>
                             </div>
                         </div>
@@ -143,6 +143,15 @@
 <script>
 // Make sure DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Add validation for base price
+    const basePrice = document.querySelector('input[name="price"]');
+    basePrice.addEventListener('input', function() {
+        if (this.value < 0) {
+            this.value = 0;
+        }
+    });
+
+    // Existing duration input code
     const durationInput = document.getElementById('duration');
     if (durationInput) {
         durationInput.addEventListener('change', function() {
@@ -189,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `);
     });
 
-    // Add Activity
+    // Modified Add Activity code with price validation
     document.getElementById('add-activity').addEventListener('click', function() {
         const container = document.getElementById('activities-container');
         container.insertAdjacentHTML('beforeend', `
@@ -201,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="col-md-5">
                         <div class="input-group">
                             <span class="input-group-text">RM</span>
-                            <input type="number" name="activity_prices[]" class="form-control" step="0.01" placeholder="Price per person" required>
+                            <input type="number" name="activity_prices[]" class="form-control" step="0.01" min="0" oninput="this.value = this.value < 0 ? 0 : this.value" placeholder="Price per person" required>
                         </div>
                     </div>
                     <div class="col-md-2">
@@ -211,6 +220,17 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `);
     });
+
+    // Also validate the initial activity price input
+    const initialActivityPrice = document.querySelector('input[name="activity_prices[]"]');
+    if (initialActivityPrice) {
+        initialActivityPrice.setAttribute('min', '0');
+        initialActivityPrice.addEventListener('input', function() {
+            if (this.value < 0) {
+                this.value = 0;
+            }
+        });
+    }
 
     // Add Available Date
     document.getElementById('add-available-date').addEventListener('click', function() {
