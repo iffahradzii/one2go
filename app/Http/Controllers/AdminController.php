@@ -170,7 +170,7 @@ class AdminController extends Controller
         $regular = DB::table('bookings as b')
             ->join('travel_packages as tp', 'b.travel_package_id', '=', 'tp.id')
             ->join('payments as p', 'p.booking_id', '=', 'b.id')
-            ->where('p.payment_status', 'complete');
+            ->where('p.payment_status', 'paid');
     
         // Add month filter only if not viewing overall data
         if ($month !== 'overall') {
@@ -185,7 +185,7 @@ class AdminController extends Controller
         $private = DB::table('private_bookings as pb')
             ->join('travel_packages as tp', 'pb.travel_package_id', '=', 'tp.id')
             ->join('payments as p', 'p.private_booking_id', '=', 'pb.id')
-            ->where('p.payment_status', 'complete');
+            ->where('p.payment_status', 'paid');
     
         // Add month filter only if not viewing overall data
         if ($month !== 'overall') {
@@ -233,7 +233,7 @@ class AdminController extends Controller
             $bookings = DB::table('bookings as b')
                 ->join('travel_packages as tp', 'b.travel_package_id', '=', 'tp.id')
                 ->join('payments as p', 'p.booking_id', '=', 'b.id')
-                ->where('p.payment_status', 'complete')
+                ->where('p.payment_status', 'paid')
                 ->where('tp.country', $country);
     
             // Add month filter only if not viewing overall data
@@ -248,7 +248,7 @@ class AdminController extends Controller
             $privateBookings = DB::table('private_bookings as pb')
                 ->join('travel_packages as tp', 'pb.travel_package_id', '=', 'tp.id')
                 ->join('payments as p', 'p.private_booking_id', '=', 'pb.id')
-                ->where('p.payment_status', 'complete')
+                ->where('p.payment_status', 'paid')
                 ->where('tp.country', $country);
     
             // Add month filter only if not viewing overall data
